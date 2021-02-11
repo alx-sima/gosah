@@ -16,7 +16,7 @@ type game struct{}
 const (
 	width  = 800
 	height = 800
-	length = width / 8
+	l      = width / 8
 )
 
 var board [8][8]piese.Piesa
@@ -34,28 +34,30 @@ func (g *game) Update(screen *ebiten.Image) error {
 // Draw is called every frame typically 1/60[s] for 60Hz display).
 func (g *game) Draw(screen *ebiten.Image) {
 	// Write your game's rendering.
-	square, _ := ebiten.NewImage(length, length, ebiten.FilterNearest)
+	square, _ := ebiten.NewImage(l, l, ebiten.FilterNearest)
 	opts := &ebiten.DrawImageOptions{}
 
 	for i := 0; i < 8; i++ {
 		for j := 0; j < 8; j++ {
-
-			x, y := ebiten.CursorPosition()
-
-			if x/length == j && y/length == i && x >= 0 && y >= 0 {
-				square.Fill(color.RGBA{0, 230, 64, 255})
+			if x, y := ebiten.CursorPosition(); x/l == j && y/l == i && x >= 0 && y >= 0 {
+				_ = square.Fill(color.RGBA{0, 230, 64, 255})
 			} else {
 				if (i+j)%2 == 0 {
 					// Patratele Albe
-					square.Fill(color.RGBA{205, 133, 63, 170})
+					_ = square.Fill(color.RGBA{205, 133, 63, 170})
 				} else {
 					// Patratele Negre
-					square.Fill(color.RGBA{128, 128, 128, 30})
+					_ = square.Fill(color.RGBA{128, 128, 128, 30})
 				}
 
 			}
-
-			screen.DrawImage(square, opts)
+			_ = screen.DrawImage(square, opts)
+			img := board[i][j].Draw()
+			if img != nil {
+				opts.GeoM.Scale(0.4, 0.4)
+				_ = screen.DrawImage(img, opts)
+				opts.GeoM.Scale(2.5, 2.5)
+			}
 			opts.GeoM.Translate(height/8, 0)
 		}
 		opts.GeoM.Translate(-9/8*height, height/8)
@@ -69,8 +71,8 @@ func (g *game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeigh
 	return outsideWidth, outsideHeight
 }
 
-func initializareMatrice( /*gameMode rune*/ ) {
-	board[0][4], board[7][4] = piese.NewPiesa(0, 4, 'K', 'N'), piese.NewPiesa(7, 4, 'K', 'A')
+func initializareMatrice( /*gameMode rune*/) {
+	board[0][4], board[7][3] = piese.NewPiesa(0, 4, 'K', 'B'), piese.NewPiesa(7, 3, 'K', 'W')
 
 	// Initializare rand
 	rand.Seed(time.Now().Unix())
@@ -82,19 +84,19 @@ func initializareMatrice( /*gameMode rune*/ ) {
 				switch r % 5 {
 				case 0:
 					// Pion
-					board[i][j], board[7-i][j] = piese.NewPiesa(i, j, 'P', 'N'), piese.NewPiesa(7-i, j, 'P', 'A')
+					board[i][j], board[7-i][7-j] = piese.NewPiesa(i, j, 'P', 'B'), piese.NewPiesa(7-i, j, 'P', 'W')
 				case 1:
 					// Nebun
-					board[i][j], board[7-i][j] = piese.NewPiesa(i, j, 'B', 'N'), piese.NewPiesa(7-i, j, 'B', 'A')
+					board[i][j], board[7-i][7-j] = piese.NewPiesa(i, j, 'B', 'B'), piese.NewPiesa(7-i, j, 'B', 'W')
 				case 2:
 					// Cal
-					board[i][j], board[7-i][j] = piese.NewPiesa(i, j, 'N', 'N'), piese.NewPiesa(7-i, j, 'N', 'N')
+					board[i][j], board[7-i][7-j] = piese.NewPiesa(i, j, 'N', 'B'), piese.NewPiesa(7-i, j, 'N', 'W')
 				case 3:
 					// Tura
-					board[i][j], board[7-i][j] = piese.NewPiesa(i, j, 'R', 'N'), piese.NewPiesa(7-i, j, 'R', 'A')
+					board[i][j], board[7-i][7-j] = piese.NewPiesa(i, j, 'R', 'B'), piese.NewPiesa(7-i, j, 'R', 'W')
 				case 4:
 					// Regina
-					board[i][j], board[7-i][j] = piese.NewPiesa(i, j, 'Q', 'N'), piese.NewPiesa(7-i, j, 'Q', 'A')
+					board[i][j], board[7-i][7-j] = piese.NewPiesa(i, j, 'Q', 'B'), piese.NewPiesa(7-i, j, 'Q', 'W')
 				}
 			}
 		}
@@ -111,18 +113,12 @@ func initializareMatrice( /*gameMode rune*/ ) {
 	go cronometru()
 }
 
-var c chan int
-
-func handle(int) {}
-
 func cronometru() {
 	for sec := 10; sec > 0; sec-- {
 		fmt.Println(sec)
 		time.Sleep(1 * time.Second)
 	}
 	fmt.Println("Ai ramas fara timp cioara")
-}
-func matriceJoc() {
 }
 
 func main() {
