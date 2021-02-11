@@ -116,12 +116,6 @@ var c chan int
 func handle(int) {}
 
 func cronometru() {
-	/*select {
-	case m := <-c:
-		handle(m)
-	case <-time.After(5 * time.Second):
-		fmt.Println("Ai ramas fara timp zdreanta")
-	}*/
 	for sec := 10; sec > 0; sec-- {
 		fmt.Println(sec)
 		time.Sleep(1 * time.Second)
@@ -143,5 +137,4 @@ func main() {
 	if err := ebiten.RunGame(g); err != nil {
 		log.Fatal(err)
 	}
-
 }
