@@ -10,13 +10,8 @@ import (
 	"github.com/hajimehoshi/ebiten"
 )
 
-//Cronometru
-//start := time.Now()
-var c chan int
+type game struct{}
 
-func handle(int) {}
-
-//
 const (
 	width  = 800
 	height = 800
@@ -24,8 +19,6 @@ const (
 
 var board [8][8]rune
 var turn bool
-
-type game struct{}
 
 // Update proceeds the game state.
 // Update is called every tick (1/0 [s] by default).
@@ -105,14 +98,22 @@ func initializareMatrice( /*gameMode rune*/ ) {
 		}
 		fmt.Printf("\n")
 	}
-	// Cronometru
-	/*select {
-		case m := <-c:
-			handle(m)
-		case <-time.After(5 * time.Second):
-		fmt.Println("timed out")
-	}*/
 
+	// Cronometru
+	go cronometru()
+}
+
+var c chan int
+
+func handle(int) {}
+
+func cronometru() {
+	select {
+	case m := <-c:
+		handle(m)
+	case <-time.After(5 * time.Second):
+		fmt.Println("timed out")
+	}
 }
 
 func matriceJoc() {
