@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/hajimehoshi/ebiten"
+	"github.com/hajimehoshi/ebiten/inpututil"
 )
 
 type game struct{}
@@ -20,13 +21,27 @@ const (
 )
 
 var board [8][8]piese.Piesa
-var turn bool
+var clicked bool
+
+func getSquare() (int, int) {
+	j, i := ebiten.CursorPosition()
+
+	return i / l, j / l
+}
 
 // Update proceeds the game state.
-// Update is called every tick (1/0 [s] by default).
+// Update is called every tick (1/60 [s] by default).
 func (g *game) Update(screen *ebiten.Image) error {
 	// Write your game's logical update.
-	//fmt.Println(ebiten.CursorPosition())
+	if inpututil.IsMouseButtonJustReleased(ebiten.MouseButtonLeft) {
+		clicked = !clicked
+		if clicked {
+			x, y := getSquare()
+			board[x][y].Move(&board, x, y)
+		} else {
+			piese.Clear(&board)
+		}
+	}
 	return nil
 }
 
@@ -39,9 +54,13 @@ func (g *game) Draw(screen *ebiten.Image) {
 
 	for i := 0; i < 8; i++ {
 		for j := 0; j < 8; j++ {
-			if x, y := ebiten.CursorPosition(); x/l == j && y/l == i && x >= 0 && y >= 0 {
+			if x, y := getSquare(); i == x && j == y {
+				// Patratul selectat
 				_ = square.Fill(color.RGBA{0, 230, 64, 255})
-			} else {
+			} else if board[i][j].Mutabil {
+				_ = square.Fill(color.RGBA{238, 238, 0, 255})
+			} else
+			{
 				if (i+j)%2 == 0 {
 					// Patratele Albe
 					_ = square.Fill(color.RGBA{205, 133, 63, 170})
@@ -72,7 +91,7 @@ func (g *game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeigh
 }
 
 func initializareMatrice( /*gameMode rune*/) {
-	board[0][4], board[7][3] = piese.NewPiesa(0, 4, 'K', 'B'), piese.NewPiesa(7, 3, 'K', 'W')
+	board[0][4], board[7][3] = piese.NewPiesa('K', 'B'), piese.NewPiesa('K', 'W')
 
 	// Initializare rand
 	rand.Seed(time.Now().Unix())
@@ -84,29 +103,22 @@ func initializareMatrice( /*gameMode rune*/) {
 				switch r % 5 {
 				case 0:
 					// Pion
-					board[i][j], board[7-i][7-j] = piese.NewPiesa(i, j, 'P', 'B'), piese.NewPiesa(7-i, j, 'P', 'W')
+					board[i][j], board[7-i][7-j] = piese.NewPiesa('P', 'B'), piese.NewPiesa('P', 'W')
 				case 1:
 					// Nebun
-					board[i][j], board[7-i][7-j] = piese.NewPiesa(i, j, 'B', 'B'), piese.NewPiesa(7-i, j, 'B', 'W')
+					board[i][j], board[7-i][7-j] = piese.NewPiesa('B', 'B'), piese.NewPiesa('B', 'W')
 				case 2:
 					// Cal
-					board[i][j], board[7-i][7-j] = piese.NewPiesa(i, j, 'N', 'B'), piese.NewPiesa(7-i, j, 'N', 'W')
+					board[i][j], board[7-i][7-j] = piese.NewPiesa('N', 'B'), piese.NewPiesa('N', 'W')
 				case 3:
 					// Tura
-					board[i][j], board[7-i][7-j] = piese.NewPiesa(i, j, 'R', 'B'), piese.NewPiesa(7-i, j, 'R', 'W')
+					board[i][j], board[7-i][7-j] = piese.NewPiesa('R', 'B'), piese.NewPiesa('R', 'W')
 				case 4:
 					// Regina
-					board[i][j], board[7-i][7-j] = piese.NewPiesa(i, j, 'Q', 'B'), piese.NewPiesa(7-i, j, 'Q', 'W')
+					board[i][j], board[7-i][7-j] = piese.NewPiesa('Q', 'B'), piese.NewPiesa('Q', 'W')
 				}
 			}
 		}
-	}
-
-	for i := 0; i < 8; i++ {
-		for j := 0; j < 8; j++ {
-			fmt.Printf("%c ", board[i][j])
-		}
-		fmt.Printf("\n")
 	}
 
 	// Cronometru
@@ -122,9 +134,9 @@ func cronometru() {
 }
 
 func main() {
-
 	initializareMatrice()
 	g := &game{}
+
 	// Specify the window size as you like. Here, a doubled size is specified.
 	ebiten.SetWindowSize(width, height)
 	ebiten.SetWindowTitle("Sah")
