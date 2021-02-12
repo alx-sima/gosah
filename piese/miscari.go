@@ -31,17 +31,38 @@ func (p *Piesa) miscarePion(tabla *[8][8]Piesa, x, y int) {
 func (p *Piesa) miscareNebun(tabla *[8][8]Piesa, x, y int) {
 	var dx = []int{-1, -1, 1, 1}
 	var dy = []int{-1, 1, -1, 1}
-	for i := 1; i < 8; i++{
-		for j := 0; j < 4; j++{
-			if inBound(x + i * dx[j], y + i * dy[j]) {
-				tabla[x + i * dx[j]][y + i * dy[j]].Mutabil = true;
+	for i := 1; i < 8; i++ {
+		for j := 0; j < 4; j++ {
+			if inBound(x+i*dx[j], y+i*dy[j]) {
+				tabla[x+i*dx[j]][y+i*dy[j]].Mutabil = true
 			}
 		}
-	} 
+	}
 }
 
-func (p *Piesa) miscareCal(tabla *[8][8]Piesa, x, y int) {}
+func (p *Piesa) miscareCal(tabla *[8][8]Piesa, x, y int) {
+	var dx = []int{-2, -1, -1, -2, 2, 1, 1, 2}
+	var dy = []int{-1, -2, 2, 1, -1, -2, 2, 1}
+	for i := 0; i < 8; i++ {
+		if inBound(x+dx[i], y+dy[i]) {
+			tabla[x+dx[i]][y+dy[i]].Mutabil = true
+		}
+	}
+}
 
-func (p *Piesa) miscareTura(tabla *[8][8]Piesa, x, y int) {}
+func (p *Piesa) miscareTura(tabla *[8][8]Piesa, x, y int) {
+	var dx = []int{-1, 0, 1, 0}
+	var dy = []int{0, 1, 0, -1}
+	for i := 1; i < 8; i++ {
+		for j := 0; j < 4; j++ {
+			if inBound(x+i*dx[j], y+i*dy[j]) {
+				tabla[x+i*dx[j]][y+i*dy[j]].Mutabil = true
+			}
+		}
+	}
+}
 
-func (p *Piesa) miscareRegina(tabla *[8][8]Piesa, x, y int) {}
+func (p *Piesa) miscareRegina(tabla *[8][8]Piesa, x, y int) {
+	p.miscareNebun(tabla, x, y)
+	p.miscareTura(tabla, x, y)
+}
