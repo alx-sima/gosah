@@ -71,12 +71,12 @@ func (g *game) Draw(screen *ebiten.Image) {
 
 			}
 			_ = screen.DrawImage(square, opts)
-			img := board[i][j].Draw()
+			/*img := board[i][j].Draw()                   LAGGY gofix
 			if img != nil {
 				opts.GeoM.Scale(0.4, 0.4)
 				_ = screen.DrawImage(img, opts)
 				opts.GeoM.Scale(2.5, 2.5)
-			}
+			}*/           
 			opts.GeoM.Translate(height/8, 0)
 		}
 		opts.GeoM.Translate(-9/8*height, height/8)
@@ -119,6 +119,14 @@ func initializareMatrice( /*gameMode rune*/) {
 				}
 			}
 		}
+	}
+
+	// FOR TESTING PURPOSES
+	for i := 0; i < 8; i++ {
+		for j := 0; j < 8; j++ {
+			fmt.Printf("%c ", board[i][j].Tip)
+		}
+		fmt.Print("\n")
 	}
 
 	// Cronometru

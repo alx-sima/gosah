@@ -7,7 +7,7 @@ import (
 
 type Piesa struct {
 	Mutabil      bool
-	tip, culoare rune
+	Tip, culoare rune
 }
 
 func NewPiesa(tip, culoare rune) Piesa {
@@ -22,7 +22,7 @@ func (p *Piesa) Draw() *ebiten.Image {
 	} else {
 		path += "b_"
 	}
-	switch p.tip {
+	switch p.Tip {
 	case 'K':
 		path += "king"
 	case 'P':
@@ -44,7 +44,7 @@ func (p *Piesa) Draw() *ebiten.Image {
 }
 
 func (p Piesa) Move(tabla *[8][8]Piesa, x, y int) {
-	switch p.tip {
+	switch p.Tip {
 	case 'K':
 		p.miscareRege(tabla, x, y)
 	case 'P':

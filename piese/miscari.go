@@ -23,9 +23,22 @@ func (p *Piesa) miscareRege(tabla *[8][8]Piesa, x, y int) {
 	// TODO: evitare piese din aceeasi echipa
 }
 
-func (p *Piesa) miscarePion(tabla *[8][8]Piesa, x, y int) {}
+func (p *Piesa) miscarePion(tabla *[8][8]Piesa, x, y int) {
+	//var dx = []int{x - 1, x, x + 1}
+	//var dy = []int{y - 2, y - 1, y + 1, y + 2}
+}
 
-func (p *Piesa) miscareNebun(tabla *[8][8]Piesa, x, y int) {}
+func (p *Piesa) miscareNebun(tabla *[8][8]Piesa, x, y int) {
+	var dx = []int{-1, -1, 1, 1}
+	var dy = []int{-1, 1, -1, 1}
+	for i := 1; i < 8; i++{
+		for j := 0; j < 4; j++{
+			if inBound(x + i * dx[j], y + i * dy[j]) {
+				tabla[x + i * dx[j]][y + i * dy[j]].Mutabil = true;
+			}
+		}
+	} 
+}
 
 func (p *Piesa) miscareCal(tabla *[8][8]Piesa, x, y int) {}
 
