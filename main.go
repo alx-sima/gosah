@@ -14,14 +14,21 @@ import (
 
 type game struct{}
 
+type piesaSelectata struct {
+	ref  *piese.Piesa
+	x, y int
+}
+
 const (
 	width  = 800
 	height = 800
 	l      = width / 8
 )
 
-var board [8][8]piese.Piesa
-var clicked bool
+var (
+	board    [8][8]piese.Piesa
+	selected piesaSelectata
+)
 
 func getSquare() (int, int) {
 	j, i := ebiten.CursorPosition()
@@ -31,15 +38,34 @@ func getSquare() (int, int) {
 
 // Update proceeds the game state.
 // Update is called every tick (1/60 [s] by default).
-func (g *game) Update(screen *ebiten.Image) error {
+func (g *game) Update(_ *ebiten.Image) error {
 	// Write your game's logical update.
 	if inpututil.IsMouseButtonJustReleased(ebiten.MouseButtonLeft) {
-		clicked = !clicked
-		if clicked {
+		if selected.ref == nil {
 			x, y := getSquare()
 			board[x][y].Move(&board, x, y)
+			selected = piesaSelectata{&board[x][y], x, y}
 		} else {
+			if x, y := getSquare(); board[x][y].Atacat {
+				board[x][y] = *selected.ref
+				board[x][y].Mutat = true
+				board[selected.x][selected.y] = piese.Empty()
+				selected = piesaSelectata{nil, 0, 0}
+			}
 			piese.Clear(&board)
+
+			// FOR TESTING PURPOSES
+			for i := 0; i < 8; i++ {
+				for j := 0; j < 8; j++ {
+					if board[i][j].Tip == 0 {
+						fmt.Print("  ")
+					} else{
+						fmt.Printf("%c ", board[i][j].Tip)
+					}
+				}
+				fmt.Print("\n")
+			}
+			fmt.Println("================")
 		}
 	}
 	return nil
@@ -56,17 +82,17 @@ func (g *game) Draw(screen *ebiten.Image) {
 		for j := 0; j < 8; j++ {
 			if x, y := getSquare(); i == x && j == y {
 				// Patratul selectat
-				_ = square.Fill(color.RGBA{0, 230, 64, 255})
-			} else if board[i][j].Mutabil {
-				_ = square.Fill(color.RGBA{238, 238, 0, 255})
+				_ = square.Fill(color.RGBA{G: 230, B: 64, A: 255})
+			} else if board[i][j].Atacat {
+				_ = square.Fill(color.RGBA{R: 238, G: 238, A: 255})
 			} else
 			{
 				if (i+j)%2 == 0 {
 					// Patratele Albe
-					_ = square.Fill(color.RGBA{205, 133, 63, 170})
+					_ = square.Fill(color.RGBA{R: 205, G: 133, B: 63, A: 170})
 				} else {
 					// Patratele Negre
-					_ = square.Fill(color.RGBA{128, 128, 128, 30})
+					_ = square.Fill(color.RGBA{R: 128, G: 128, B: 128, A: 30})
 				}
 
 			}
@@ -76,7 +102,7 @@ func (g *game) Draw(screen *ebiten.Image) {
 				opts.GeoM.Scale(0.4, 0.4)
 				_ = screen.DrawImage(img, opts)
 				opts.GeoM.Scale(2.5, 2.5)
-			}*/           
+			}*/
 			opts.GeoM.Translate(height/8, 0)
 		}
 		opts.GeoM.Translate(-9/8*height, height/8)
@@ -130,7 +156,7 @@ func initializareMatrice( /*gameMode rune*/) {
 	}
 
 	// Cronometru
-	go cronometru()
+	// go cronometru()
 }
 
 func cronometru() {

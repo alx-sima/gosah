@@ -6,18 +6,24 @@ import (
 )
 
 type Piesa struct {
-	Mutabil      bool
-	Tip, culoare rune
+	Atacat, Mutat bool
+	Tip, Culoare  rune
 }
 
+// Constructori
 func NewPiesa(tip, culoare rune) Piesa {
-	e := Piesa{false, tip, culoare}
+	e := Piesa{false, false, tip, culoare}
+	return e
+}
+func Empty() Piesa{
+	e := Piesa{false, false, 0, 0}
 	return e
 }
 
+// Metode
 func (p *Piesa) Draw() *ebiten.Image {
 	path := "imagini/"
-	if p.culoare == 'W' {
+	if p.Culoare == 'W' {
 		path += "w_"
 	} else {
 		path += "b_"
