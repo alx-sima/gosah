@@ -91,7 +91,7 @@ func (g *game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeigh
 }
 
 func initializareMatrice( /*gameMode rune*/) {
-	board[0][4], board[7][3] = piese.NewPiesa('K', 'B'), piese.NewPiesa('K', 'W')
+	board[0][4], board[7][4] = piese.NewPiesa('K', 'B'), piese.NewPiesa('K', 'W')
 
 	// Initializare rand
 	rand.Seed(time.Now().Unix())
@@ -103,19 +103,19 @@ func initializareMatrice( /*gameMode rune*/) {
 				switch r % 5 {
 				case 0:
 					// Pion
-					board[i][j], board[7-i][7-j] = piese.NewPiesa('P', 'B'), piese.NewPiesa('P', 'W')
+					board[i][j], board[7-i][j] = piese.NewPiesa('P', 'B'), piese.NewPiesa('P', 'W')
 				case 1:
 					// Nebun
-					board[i][j], board[7-i][7-j] = piese.NewPiesa('B', 'B'), piese.NewPiesa('B', 'W')
+					board[i][j], board[7-i][j] = piese.NewPiesa('B', 'B'), piese.NewPiesa('B', 'W')
 				case 2:
 					// Cal
-					board[i][j], board[7-i][7-j] = piese.NewPiesa('N', 'B'), piese.NewPiesa('N', 'W')
+					board[i][j], board[7-i][j] = piese.NewPiesa('N', 'B'), piese.NewPiesa('N', 'W')
 				case 3:
 					// Tura
-					board[i][j], board[7-i][7-j] = piese.NewPiesa('R', 'B'), piese.NewPiesa('R', 'W')
+					board[i][j], board[7-i][j] = piese.NewPiesa('R', 'B'), piese.NewPiesa('R', 'W')
 				case 4:
 					// Regina
-					board[i][j], board[7-i][7-j] = piese.NewPiesa('Q', 'B'), piese.NewPiesa('Q', 'W')
+					board[i][j], board[7-i][j] = piese.NewPiesa('Q', 'B'), piese.NewPiesa('Q', 'W')
 				}
 			}
 		}
