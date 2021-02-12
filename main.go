@@ -20,14 +20,15 @@ type piesaSelectata struct {
 }
 
 const (
-	width  = 800
-	height = 800
+	width  = 1080
+	height = 1080
 	l      = width / 8
 )
 
 var (
 	board    [8][8]piese.Piesa
 	selected piesaSelectata
+	clicked  bool
 )
 
 func getSquare() (int, int) {
@@ -41,7 +42,8 @@ func getSquare() (int, int) {
 func (g *game) Update(_ *ebiten.Image) error {
 	// Write your game's logical update.
 	if inpututil.IsMouseButtonJustReleased(ebiten.MouseButtonLeft) {
-		if selected.ref == nil {
+		clicked = !clicked
+		if clicked {
 			x, y := getSquare()
 			board[x][y].Move(&board, x, y)
 			selected = piesaSelectata{&board[x][y], x, y}
@@ -59,7 +61,7 @@ func (g *game) Update(_ *ebiten.Image) error {
 				for j := 0; j < 8; j++ {
 					if board[i][j].Tip == 0 {
 						fmt.Print("  ")
-					} else{
+					} else {
 						fmt.Printf("%c ", board[i][j].Tip)
 					}
 				}
@@ -67,6 +69,7 @@ func (g *game) Update(_ *ebiten.Image) error {
 			}
 			fmt.Println("================")
 		}
+
 	}
 	return nil
 }
@@ -94,15 +97,14 @@ func (g *game) Draw(screen *ebiten.Image) {
 					// Patratele Negre
 					_ = square.Fill(color.RGBA{R: 128, G: 128, B: 128, A: 30})
 				}
-
 			}
 			_ = screen.DrawImage(square, opts)
-			/*img := board[i][j].Draw()                   LAGGY gofix
+			img := board[i][j].Draw()
 			if img != nil {
-				opts.GeoM.Scale(0.4, 0.4)
+				//opts.GeoM.Scale(0.8, 0.8)
 				_ = screen.DrawImage(img, opts)
-				opts.GeoM.Scale(2.5, 2.5)
-			}*/
+				//opts.GeoM.Scale(1.25, 1.25)
+			}
 			opts.GeoM.Translate(height/8, 0)
 		}
 		opts.GeoM.Translate(-9/8*height, height/8)
@@ -154,7 +156,7 @@ func initializareMatrice( /*gameMode rune*/) {
 		}
 		fmt.Print("\n")
 	}
-
+	fmt.Println("================")
 	// Cronometru
 	// go cronometru()
 }
