@@ -56,11 +56,21 @@ func (g *game) Update(_ *ebiten.Image) error {
 				board[x][y].Mutat = true
 				board[selected.x][selected.y] = piese.Empty()
 				selected = piesaSelectata{nil, 0, 0}
+
+				piese.VerifPatrateAtacate(&board)
+
+				for i := 0; i < 8; i++ {
+					fmt.Print(i+1, "     ")
+					for j := 0; j < 8; j++ {
+						fmt.Print(board[i][j].Control, " ")
+					}
+					fmt.Print("\n")
+				}
 			}
 			piese.Clear(&board)
 
 			// FOR TESTING PURPOSES
-			for i := 0; i < 8; i++ {
+			/*for i := 0; i < 8; i++ {
 				for j := 0; j < 8; j++ {
 					if board[i][j].Tip == 0 {
 						fmt.Print("  ")
@@ -69,11 +79,11 @@ func (g *game) Update(_ *ebiten.Image) error {
 					}
 				}
 				fmt.Print("\n")
-			}
+			}*/
 			fmt.Println("================")
 		}
 	}
-	fmt.Println(ebiten.CurrentFPS())
+	//fmt.Println(ebiten.CurrentFPS())
 	return nil
 }
 
