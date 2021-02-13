@@ -21,7 +21,7 @@ func Empty() Piesa{
 }
 
 // Metode
-func (p *Piesa) Draw() *ebiten.Image {
+func (p *Piesa) DrawPiece() *ebiten.Image {
 	path := "imagini/"
 	if p.Culoare == 'W' {
 		path += "w_"
