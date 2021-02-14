@@ -7,10 +7,30 @@ func Clear(tabla *[8][8]Piesa) {
 	for i := 0; i < 8; i++ {
 		for j := 0; j < 8; j++ {
 			tabla[i][j].Atacat = false
+			tabla[i][j].Control = 0
+		}
+	}
+
+	VerifPatrateAtacate(tabla)
+}
+
+// Seteaza controlul acelui patrat
+func SetareControl(tabla *[8][8]Piesa, culoare rune, x, y int) {
+	if culoare == 'W' {
+		if tabla[x][y].Control == 2 {
+			tabla[x][y].Control = 3
+		} else if tabla[x][y].Control == 0 {
+			tabla[x][y].Control = 1
+		}
+	} else {
+		if tabla[x][y].Control == 1 {
+			tabla[x][y].Control = 3
+		} else if tabla[x][y].Control == 0 {
+			tabla[x][y].Control = 2
 		}
 	}
 }
-// TODO: verificare pozitii controlate kinda buggy needs fix but works kinda
+
 // Verifica pentru fiecare piesa ce patrate ataca si formeaza in tabla.Control o matrice care arata ce culoare controleaza fiecare patrat
 func VerifPatrateAtacate(tabla *[8][8]Piesa) {
 	for i := 0; i < 8; i++ {
@@ -52,19 +72,7 @@ func (p *Piesa) miscareRege(tabla *[8][8]Piesa, x, y int, utilizare rune) {
 						tabla[m][n].Atacat = true
 					}
 				} else {
-					if tabla[x][y].Culoare == 'W' {
-						if tabla[m][n].Control == 2 {
-							tabla[m][n].Control = 3
-						} else {
-							tabla[m][n].Control = 1
-						}
-					} else {
-						if tabla[m][n].Control == 1 {
-							tabla[m][n].Control = 3
-						} else {
-							tabla[m][n].Control = 2
-						}
-					}
+					SetareControl(tabla, tabla[x][y].Culoare, m, n)
 				}
 			}
 		}
@@ -84,16 +92,14 @@ func (p *Piesa) miscarePion(tabla *[8][8]Piesa, x, y int, utilizare rune) {
 						if utilizare == 'M' {
 							tabla[m][n].Atacat = true
 						} else {
-							if tabla[m][n].Control == 2 {
-								tabla[m][n].Control = 3
-							} else {
-								tabla[m][n].Control = 1
-							}
+							SetareControl(tabla, tabla[x][y].Culoare, m, n)
 						}
 					}
 				}
-				if tabla[m][n].Tip == 0 && i == 1 {
-					tabla[m][n].Atacat = true
+				if utilizare == 'M' {
+					if tabla[m][n].Tip == 0 && i == 1 {
+						tabla[m][n].Atacat = true
+					}
 				}
 			}
 		}
@@ -107,13 +113,11 @@ func (p *Piesa) miscarePion(tabla *[8][8]Piesa, x, y int, utilizare rune) {
 						if utilizare == 'M' {
 							tabla[m][n].Atacat = true
 						} else {
-							if tabla[m][n].Control == 1 {
-								tabla[m][n].Control = 3
-							} else {
-								tabla[m][n].Control = 2
-							}
+							SetareControl(tabla, tabla[x][y].Culoare, m, n)
 						}
 					}
+				}
+				if utilizare == 'M' {
 					if tabla[m][n].Tip == 0 && i == 1 {
 						tabla[m][n].Atacat = true
 					}
@@ -122,16 +126,18 @@ func (p *Piesa) miscarePion(tabla *[8][8]Piesa, x, y int, utilizare rune) {
 		}
 	}
 
-	// Verifica daca piesa poate parcurge 2 patrate
-	if tabla[x][y].Mutat == false {
-		if tabla[x][y].Culoare == 'W' {
-			if tabla[x-1][y].Tip == 0 && tabla[x-2][y].Tip == 0 {
-				tabla[x-2][y].Atacat = true
+	if utilizare == 'M' {
+		// Verifica daca piesa poate parcurge 2 patrate
+		if tabla[x][y].Mutat == false {
+			if tabla[x][y].Culoare == 'W' {
+				if tabla[x-1][y].Tip == 0 && tabla[x-2][y].Tip == 0 {
+					tabla[x-2][y].Atacat = true
+				}
 			}
-		}
-		if tabla[x][y].Culoare == 'B' {
-			if tabla[x+1][y].Tip == 0 && tabla[x+2][y].Tip == 0 {
-				tabla[x+2][y].Atacat = true
+			if tabla[x][y].Culoare == 'B' {
+				if tabla[x+1][y].Tip == 0 && tabla[x+2][y].Tip == 0 {
+					tabla[x+2][y].Atacat = true
+				}
 			}
 		}
 	}
@@ -149,39 +155,17 @@ func (p *Piesa) miscareNebun(tabla *[8][8]Piesa, x, y int, utilizare rune) {
 
 				// Daca vede o piesa de aceeasi culoare, se termina cautarea pe acea diagonala
 				if tabla[x][y].Culoare == tabla[m][n].Culoare {
+
 					if utilizare == 'V' {
-						if tabla[x][y].Culoare == 'W' {
-							if tabla[m][n].Control == 2 {
-								tabla[m][n].Control = 3
-							} else {
-								tabla[m][n].Control = 1
-							}
-						} else {
-							if tabla[m][n].Control == 1 {
-								tabla[m][n].Control = 3
-							} else {
-								tabla[m][n].Control = 2
-							}
-						}
+						SetareControl(tabla, tabla[x][y].Culoare, m, n)
 					}
+
 					break
 				} else {
 					if utilizare == 'M' {
 						tabla[m][n].Atacat = true
 					} else {
-						if tabla[x][y].Culoare == 'W' {
-							if tabla[m][n].Control == 2 {
-								tabla[m][n].Control = 3
-							} else {
-								tabla[m][n].Control = 1
-							}
-						} else {
-							if tabla[m][n].Control == 1 {
-								tabla[m][n].Control = 3
-							} else {
-								tabla[m][n].Control = 2
-							}
-						}
+						SetareControl(tabla, tabla[x][y].Culoare, m, n)
 					}
 
 					// Daca vede o piesa de alta culoare, afiseaza ca poate ataca acel patrat, dupa care opreste cautarea pe acea diagonala
@@ -206,36 +190,10 @@ func (p *Piesa) miscareCal(tabla *[8][8]Piesa, x, y int, utilizare rune) {
 				if utilizare == 'M' {
 					tabla[m][n].Atacat = true
 				} else {
-					if tabla[x][y].Culoare == 'W' {
-						if tabla[m][n].Control == 2 {
-							tabla[m][n].Control = 3
-						} else {
-							tabla[m][n].Control = 1
-						}
-					} else {
-						if tabla[m][n].Control == 1 {
-							tabla[m][n].Control = 3
-						} else {
-							tabla[m][n].Control = 2
-						}
-					}
+					SetareControl(tabla, tabla[x][y].Culoare, m, n)
 				}
 			} else {
-				if utilizare == 'V' {
-					if tabla[x][y].Culoare == 'W' {
-						if tabla[m][n].Control == 2 {
-							tabla[m][n].Control = 3
-						} else {
-							tabla[m][n].Control = 1
-						}
-					} else {
-						if tabla[m][n].Control == 1 {
-							tabla[m][n].Control = 3
-						} else {
-							tabla[m][n].Control = 2
-						}
-					}
-				}
+				SetareControl(tabla, tabla[x][y].Culoare, m, n)
 			}
 		}
 	}
@@ -254,38 +212,15 @@ func (p *Piesa) miscareTura(tabla *[8][8]Piesa, x, y int, utilizare rune) {
 				// Daca vede o piesa de aceeasi culoare, se termina cautarea pe acea linie/coloana
 				if tabla[x][y].Culoare == tabla[m][n].Culoare {
 					if utilizare == 'V' {
-						if tabla[x][y].Culoare == 'W' {
-							if tabla[m][n].Control == 2 {
-								tabla[m][n].Control = 3
-							} else {
-								tabla[m][n].Control = 1
-							}
-						} else {
-							if tabla[m][n].Control == 1 {
-								tabla[m][n].Control = 3
-							} else {
-								tabla[m][n].Control = 2
-							}
-						}
+						SetareControl(tabla, tabla[x][y].Culoare, m, n)
 					}
+
 					break
 				} else {
 					if utilizare == 'M' {
 						tabla[m][n].Atacat = true
 					} else {
-						if tabla[x][y].Culoare == 'W' {
-							if tabla[m][n].Control == 2 {
-								tabla[m][n].Control = 3
-							} else {
-								tabla[m][n].Control = 1
-							}
-						} else {
-							if tabla[m][n].Control == 1 {
-								tabla[m][n].Control = 3
-							} else {
-								tabla[m][n].Control = 2
-							}
-						}
+						SetareControl(tabla, tabla[x][y].Culoare, m, n)
 					}
 
 					// Daca vede o piesa de alta culoare, afiseaza ca poate ataca acel patrat, dupa care opreste cautarea pe acea linie/coloana

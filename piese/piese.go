@@ -8,7 +8,7 @@ import (
 type Piesa struct {
 	Atacat, Mutat bool
 	Tip, Culoare  rune
-	Control int // 0 inseamna ca nu e controlat de nimeni acel patrat; 1 inseamna ca e controlat de alb, 2 inseamna ca e controlat de negru, 3 inseamna ca e controlat de ambele
+	Control       int // 0 inseamna ca nu e controlat de nimeni acel patrat; 1 inseamna ca e controlat de alb, 2 inseamna ca e controlat de negru, 3 inseamna ca e controlat de ambele
 }
 
 // Constructori
@@ -16,7 +16,8 @@ func NewPiesa(tip, culoare rune) Piesa {
 	e := Piesa{false, false, tip, culoare, 0}
 	return e
 }
-func Empty() Piesa{
+
+func Empty() Piesa {
 	e := Piesa{false, false, 0, 0, 0}
 	return e
 }

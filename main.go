@@ -26,9 +26,9 @@ const (
 )
 
 var (
-	board                     [8][8]piese.Piesa
-	selected                  piesaSelectata
-	clicked, changed          bool
+	board            [8][8]piese.Piesa
+	selected         piesaSelectata
+	clicked, changed bool
 )
 
 func getSquare() (int, int) {
@@ -57,29 +57,17 @@ func (g *game) Update(_ *ebiten.Image) error {
 				board[selected.x][selected.y] = piese.Empty()
 				selected = piesaSelectata{nil, 0, 0}
 
-				piese.VerifPatrateAtacate(&board)
-
-				for i := 0; i < 8; i++ {
-					fmt.Print(i+1, "     ")
-					for j := 0; j < 8; j++ {
-						fmt.Print(board[i][j].Control, " ")
-					}
-					fmt.Print("\n")
-				}
 			}
 			piese.Clear(&board)
 
 			// FOR TESTING PURPOSES
-			/*for i := 0; i < 8; i++ {
+			for i := 0; i < 8; i++ {
+				fmt.Print(i+1, "     ")
 				for j := 0; j < 8; j++ {
-					if board[i][j].Tip == 0 {
-						fmt.Print("  ")
-					} else {
-						fmt.Printf("%c ", board[i][j].Tip)
-					}
+					fmt.Print(board[i][j].Control, " ")
 				}
 				fmt.Print("\n")
-			}*/
+			}
 			fmt.Println("================")
 		}
 	}
