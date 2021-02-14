@@ -1,11 +1,11 @@
 package piese
 
-var sahAlb, sahNegru bool
-
+// inBound verifica daca pozitia se afla pe tabla
 func inBound(a, b int) bool {
 	return a >= 0 && b >= 0 && a < 8 && b < 8
 }
 
+// Clear curata tabla de miscari posibile + verifica pentru pozitiile actuale controlul asupra fieccarui patrat
 func Clear(tabla *[8][8]Piesa) {
 	for i := 0; i < 8; i++ {
 		for j := 0; j < 8; j++ {
@@ -16,7 +16,7 @@ func Clear(tabla *[8][8]Piesa) {
 	verifPatrateAtacate(tabla)
 }
 
-// Seteaza controlul acelui patrat
+// setareControl seteaza controlul acelui patrat
 func setareControl(patrat *Piesa, culoare rune) {
 	if culoare == 'W' {
 		if patrat.Control == 2 {
@@ -33,7 +33,7 @@ func setareControl(patrat *Piesa, culoare rune) {
 	}
 }
 
-// Verifica pentru fiecare piesa ce patrate ataca si formeaza in tabla.Control o matrice care arata ce culoare controleaza fiecare patrat
+// verifPatrateAtacate verifica pentru fiecare piesa ce patrate ataca si formeaza in tabla.Control o matrice care arata ce culoare controleaza fiecare patrat
 func verifPatrateAtacate(tabla *[8][8]Piesa) {
 	for i := 0; i < 8; i++ {
 		for j := 0; j < 8; j++ {
@@ -42,6 +42,7 @@ func verifPatrateAtacate(tabla *[8][8]Piesa) {
 	}
 }
 
+// verifIesireSah verifica daca exista miscare care scoate regele din sah
 func verifIesireSah(tabla *[8][8]Piesa, x, y, m, n int) {
 	tabla[m][n].Tip = tabla[x][y].Tip
 	tabla[m][n].Culoare = tabla[x][y].Culoare
@@ -62,17 +63,24 @@ func verifIesireSah(tabla *[8][8]Piesa, x, y, m, n int) {
 	tabla[m][n].Culoare = 0
 }
 
-func (p *Piesa) miscareRege(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
+// miscareRege cauta miscarile posibile pt regele ales
+func (p *Piesa) miscareRege(tabla *[8][8]Piesa, x, y int, mutare bool) {
 	var dx = []int{x - 1, x - 1, x - 1, x, x + 1, x + 1, x + 1, x}
 	var dy = []int{y - 1, y, y + 1, y + 1, y + 1, y, y - 1, y - 1}
 	for i := 0; i < 8; i++ {
 		m, n := dx[i], dy[i]
 		if inBound(m, n) {
+
+			// Atat timp cat culoarea e diferita verifica patratul
 			if tabla[x][y].Culoare != tabla[m][n].Culoare {
+
+				// Daca alegem sa mutam afiseaza patratele disponibile
 				if mutare {
+					// Daca regele este alb si patratul de coords m, n nu e controlat de negru, regele poate ataca acel patrat
 					if tabla[x][y].Culoare == 'W' && tabla[m][n].Control < 2 {
 						tabla[m][n].Atacat = true
 					}
+					// Daca regele este negru si patratul de coords m, n nu e controlat de alb, regele poate ataca acel patrat
 					if tabla[x][y].Culoare == 'B' && (tabla[m][n].Control == 2 || tabla[m][n].Control == 0) {
 						tabla[m][n].Atacat = true
 					}
@@ -84,6 +92,7 @@ func (p *Piesa) miscareRege(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 	}
 }
 
+// miscarePion cauta miscarile posibile pentru pionul de la (x, y)
 func (p *Piesa) miscarePion(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 	var dy = []int{y - 1, y, y + 1}
 	for i := 0; i < 3; i++ {
@@ -92,9 +101,11 @@ func (p *Piesa) miscarePion(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 		if tabla[x][y].Culoare == 'W' {
 			m, n := x-1, dy[i]
 			if inBound(m, n) {
+				// Daca se afla o piesa inamica in stanga- sau dreapta-susul pionului, verifica acel patrat
 				if tabla[m][n].Tip != 0 && i != 1 {
 					if tabla[x][y].Culoare != tabla[m][n].Culoare {
 						if mutare {
+							// Daca regele se afla in sah, verificam daca aceasta mutare il scaote din sah
 							if isSah {
 								verifIesireSah(tabla, x, y, m, n)
 							} else {
@@ -105,8 +116,10 @@ func (p *Piesa) miscarePion(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 						}
 					}
 				}
+				// Verifica daca poti muta pionul un patrat in fata
 				if mutare {
 					if tabla[m][n].Tip == 0 && i == 1 {
+						// Daca regele se afla in sah, verificam daca aceasta mutare il scaote din sah
 						if isSah {
 							verifIesireSah(tabla, x, y, m, n)
 						} else {
@@ -121,9 +134,11 @@ func (p *Piesa) miscarePion(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 		if tabla[x][y].Culoare == 'B' {
 			m, n := x+1, dy[i]
 			if inBound(m, n) {
+				// Daca se afla o piesa inamica in stanga- sau dreapta-josul pionului, verifica acel patrat
 				if tabla[m][n].Tip != 0 && i != 1 {
 					if tabla[x][y].Culoare != tabla[m][n].Culoare {
 						if mutare {
+							// Daca regele se afla in sah, verificam daca aceasta mutare il scaote din sah
 							if isSah {
 								verifIesireSah(tabla, x, y, m, n)
 							} else {
@@ -134,8 +149,10 @@ func (p *Piesa) miscarePion(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 						}
 					}
 				}
+				// Verifica daca poti muta pionul un patrat in fata
 				if mutare {
 					if tabla[m][n].Tip == 0 && i == 1 {
+						// Daca regele se afla in sah, verificam daca aceasta mutare il scaote din sah
 						if isSah {
 							verifIesireSah(tabla, x, y, m, n)
 						} else {
@@ -147,11 +164,14 @@ func (p *Piesa) miscarePion(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 		}
 	}
 
+	// Verifica daca piesa poate parcurge 2 patrate
 	if mutare {
-		// Verifica daca piesa poate parcurge 2 patrate
+		// Daca a fost mutat deja, nu mai poate parcurge 2 patrate
 		if tabla[x][y].Mutat == false {
 			if tabla[x][y].Culoare == 'W' {
+				// Verifica daca urmatoarele doua patrate sunt libere
 				if tabla[x-1][y].Tip == 0 && tabla[x-2][y].Tip == 0 {
+					// Daca regele se afla in sah, verificam daca aceasta mutare il scaote din sah
 					if isSah {
 						verifIesireSah(tabla, x, y, x-2, y)
 					} else {
@@ -160,11 +180,13 @@ func (p *Piesa) miscarePion(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 				}
 			}
 			if tabla[x][y].Culoare == 'B' {
+				// Verifica daca urmatoarele doua patrate sunt libere
 				if tabla[x+1][y].Tip == 0 && tabla[x+2][y].Tip == 0 {
+					// Daca regele se afla in sah, verificam daca aceasta mutare il scaote din sah
 					if isSah {
-						verifIesireSah(tabla, x, y, x-2, y)
+						verifIesireSah(tabla, x, y, x+2, y)
 					} else {
-						tabla[x-2][y].Atacat = true
+						tabla[x+2][y].Atacat = true
 					}
 				}
 			}
@@ -172,6 +194,7 @@ func (p *Piesa) miscarePion(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 	}
 }
 
+// miscareNebun cauta miscarile posibile pentru nebunul de la (x, y)
 func (p *Piesa) miscareNebun(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 	var dx = []int{-1, -1, 1, 1}
 	var dy = []int{-1, 1, -1, 1}
@@ -181,8 +204,9 @@ func (p *Piesa) miscareNebun(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 			m, n := x+j*dx[i], y+j*dy[i]
 
 			if inBound(m, n) {
-
+				// Daca regele se afla in sah, verificam daca aceasta mutare il scaote din sah
 				if isSah {
+					verifIesireSah(tabla, x, y, m, n)
 				}
 
 				// Daca vede o piesa de aceeasi culoare, se termina cautarea pe acea diagonala
@@ -191,10 +215,10 @@ func (p *Piesa) miscareNebun(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 					if !mutare {
 						setareControl(&tabla[m][n], tabla[x][y].Culoare)
 					}
-
 					break
 				} else {
 					if mutare {
+						// Daca regele se afla in sah, verificam daca aceasta mutare il scaote din sah
 						if isSah {
 							verifIesireSah(tabla, x, y, m, n)
 						} else {
@@ -214,6 +238,7 @@ func (p *Piesa) miscareNebun(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 	}
 }
 
+// miscareCal cauta miscarile posibile pentru calul de la (x, y)
 func (p *Piesa) miscareCal(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 	var dx = []int{-2, -1, -1, -2, 2, 1, 1, 2}
 	var dy = []int{-1, -2, 2, 1, -1, -2, 2, 1}
@@ -222,8 +247,10 @@ func (p *Piesa) miscareCal(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 		m, n := x+dx[i], y+dy[i]
 
 		if inBound(m, n) {
+			// Daca patratul m, n e de culoare diferita sau liber, ataca acel patrat
 			if tabla[x][y].Culoare != tabla[m][n].Culoare {
 				if mutare {
+					// Daca regele se afla in sah, verificam daca aceasta mutare il scaote din sah
 					if isSah {
 						verifIesireSah(tabla, x, y, m, n)
 					} else {
@@ -239,6 +266,7 @@ func (p *Piesa) miscareCal(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 	}
 }
 
+// miscareTura cauta miscarile posibile pentru tura de la (x, y)
 func (p *Piesa) miscareTura(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 	var dx = []int{-1, 0, 1, 0}
 	var dy = []int{0, 1, 0, -1}
@@ -256,6 +284,7 @@ func (p *Piesa) miscareTura(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 					break
 				} else {
 					if mutare {
+						// Daca regele se afla in sah, verificam daca aceasta mutare il scaote din sah
 						if isSah {
 							verifIesireSah(tabla, x, y, m, n)
 						} else {
@@ -274,8 +303,9 @@ func (p *Piesa) miscareTura(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 		}
 	}
 }
-
+// miscareRegina cauta miscarile posibile pentru regina de la (x, y)
 func (p *Piesa) miscareRegina(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
+	// regina se misca ca nebunul si tura
 	p.miscareNebun(tabla, x, y, mutare, isSah)
 	p.miscareTura(tabla, x, y, mutare, isSah)
 }

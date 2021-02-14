@@ -15,10 +15,6 @@ import (
 
 type game struct{}
 
-
-// Returneaza indicii matricei in care se afla mouse-ul
-
-
 // Update proceeds the game state.
 // Update is called every tick (1/60 [s] by default).
 func (g *game) Update(_ *ebiten.Image) error {
@@ -76,7 +72,7 @@ func (g *game) Update(_ *ebiten.Image) error {
 						piese.RegeNegru = piese.PozitiePiesa{Ref: &util.Board[x][y], X: x, Y: y}
 					}
 				}
-
+				piese.Clear(&util.Board)
 				// Schimba tura de joc
 				if util.Turn == 'W' {
 					// Verifica daca regele negru e in sah
@@ -92,7 +88,7 @@ func (g *game) Update(_ *ebiten.Image) error {
 					util.Turn = 'W'
 				}
 			}
-			piese.Clear(&util.Board)
+
 
 			// Afisare matrice (doar pt testing)
 			for i := 0; i < 8; i++ {
@@ -136,6 +132,10 @@ func (g *game) Draw(screen *ebiten.Image) {
 				// Coloreaza cu galben patratele in care se poate ajunge cu piesa
 				if util.Board[i][j].Atacat {
 					_ = square.Fill(color.RGBA{R: 238, G: 238, A: 255})
+				} else if util.SahAlb && i == piese.RegeAlb.X && j == piese.RegeAlb.Y {
+					_ = square.Fill(color.RGBA{R: 255, A : 255})
+				} else if util.SahNegru && i == piese.RegeNegru.X && j == piese.RegeNegru.Y{
+					_ = square.Fill(color.RGBA{R: 255, A : 255})
 				} else {
 					if (i+j)%2 == 0 {
 						// Coloreaza patratele albe

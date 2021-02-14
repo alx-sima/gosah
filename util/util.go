@@ -32,7 +32,7 @@ func GetSquare() (int, int) {
 	return i, j
 }
 func Cronometru() {
-	// TODO
+	// TODO: adaugat cronometru
 	for sec := 10; sec > 0; sec-- {
 		fmt.Println(sec)
 		time.Sleep(1 * time.Second)
