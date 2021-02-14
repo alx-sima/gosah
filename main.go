@@ -29,6 +29,7 @@ var (
 	board            [8][8]piese.Piesa
 	selected         piesaSelectata
 	clicked, changed bool
+	turn             rune
 )
 
 func getSquare() (int, int) {
@@ -46,8 +47,10 @@ func (g *game) Update(_ *ebiten.Image) error {
 		clicked = !clicked
 		if clicked {
 			x, y := getSquare()
-			board[x][y].Move(&board, x, y)
-			selected = piesaSelectata{&board[x][y], x, y}
+			if board[x][y].Culoare == turn {
+				board[x][y].Move(&board, x, y)
+				selected = piesaSelectata{&board[x][y], x, y}
+			}
 		} else {
 			if x, y := getSquare(); board[x][y].Atacat {
 				changed = true
@@ -57,6 +60,11 @@ func (g *game) Update(_ *ebiten.Image) error {
 				board[selected.x][selected.y] = piese.Empty()
 				selected = piesaSelectata{nil, 0, 0}
 
+				if turn == 'W' {
+					turn = 'B'
+				} else {
+					turn = 'W'
+				}
 			}
 			piese.Clear(&board)
 
@@ -183,6 +191,7 @@ func cronometru() {
 func main() {
 	initializareMatrice()
 	g := &game{}
+	turn = 'W'
 
 	// Nu mai da clear la fiecare frame
 	ebiten.SetScreenClearedEveryFrame(false)

@@ -23,6 +23,8 @@ func Empty() Piesa {
 }
 
 // Metode
+
+// returneaza imaginea piesei ce trebuie desenata, nil daca nu gaseste nimc
 func (p *Piesa) DrawPiece() *ebiten.Image {
 	path := "imagini/"
 	if p.Culoare == 'W' {
