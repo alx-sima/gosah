@@ -7,10 +7,11 @@ import (
 
 	"github.com/hajimehoshi/ebiten"
 )
+
 const (
-	Width  = 1920
-	Height = 1080
-	L      = Height / 8
+	Width  = 1920       // Lungimea ecranului
+	Height = 1080       // Latimea ecranului
+	L      = Height / 8 // Latura unui patrat
 )
 
 var (
@@ -19,10 +20,16 @@ var (
 	Clicked, Changed, Mutare, SahAlb, SahNegru bool
 	Turn                                       rune
 )
+
+// Returneaza patratul in care se afla mouse-ul
 func GetSquare() (int, int) {
 	j, i := ebiten.CursorPosition()
+	i, j = i/L, j/L
 	Changed = true
-	return i / L, j / L
+	if i < 0 || j < 0 || i > 7 || j > 7 {
+		panic("mouse in afara tablei")
+	}
+	return i, j
 }
 func Cronometru() {
 	// TODO

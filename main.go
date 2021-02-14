@@ -43,9 +43,9 @@ func (g *game) Update(_ *ebiten.Image) error {
 
 		if util.Clicked {
 			if util.Board[x][y].Culoare == util.Turn {
-				isSah := (util.SahNegru || util.SahAlb)
-				util.Board[x][y].Move(&util.Board, x, y, isSah)
-				util.Selected = piese.PozitiePiesa{&util.Board[x][y], x, y}
+				isSah := util.SahNegru || util.SahAlb
+				util.Board[x][y].Move(&util.Board, x, y, true, isSah)
+				util.Selected = piese.PozitiePiesa{Ref: &util.Board[x][y], X: x, Y: y}
 			}
 		}
 		if util.Mutare {
@@ -55,7 +55,7 @@ func (g *game) Update(_ *ebiten.Image) error {
 				util.Board[x][y] = *util.Selected.Ref
 				util.Board[x][y].Mutat = true
 				util.Board[util.Selected.X][util.Selected.Y] = piese.Empty()
-				util.Selected = piese.PozitiePiesa{nil, 0, 0}
+				util.Selected = piese.PozitiePiesa{}
 
 				// Transforma pionul in regina cand ajunge la capat
 				if util.Board[x][y].Tip == 'P' {
@@ -70,10 +70,10 @@ func (g *game) Update(_ *ebiten.Image) error {
 				// Ia pozitia regelui
 				if util.Board[x][y].Tip == 'K' {
 					if util.Board[x][y].Culoare == 'W' {
-						piese.RegeAlb = piese.PozitiePiesa{&util.Board[x][y], x, y}
+						piese.RegeAlb = piese.PozitiePiesa{Ref: &util.Board[x][y], X: x, Y: y}
 					}
 					if util.Board[x][y].Culoare == 'B' {
-						piese.RegeNegru = piese.PozitiePiesa{&util.Board[x][y], x, y}
+						piese.RegeNegru = piese.PozitiePiesa{Ref: &util.Board[x][y], X: x, Y: y}
 					}
 				}
 
@@ -81,13 +81,13 @@ func (g *game) Update(_ *ebiten.Image) error {
 				if util.Turn == 'W' {
 					// Verifica daca regele negru e in sah
 					if util.Board[piese.RegeNegru.X][piese.RegeNegru.Y].Control %2 == 1 {
-						util.SahNegru = true;
+						util.SahNegru = true
 					}
 					util.Turn = 'B'
 				} else {
 					// Verifica daca regele alb e in sah
 					if util.Board[piese.RegeAlb.X][piese.RegeAlb.Y].Control > 1 {
-						util.SahAlb = true;
+						util.SahAlb = true
 					}
 					util.Turn = 'W'
 				}
@@ -121,12 +121,12 @@ func (g *game) Draw(screen *ebiten.Image) {
 		square, _ := ebiten.NewImage(util.L, util.L, ebiten.FilterNearest)
 		opts := &ebiten.DrawImageOptions{}
 
-		screen.Clear()
+		_ = screen.Clear()
 
 		for i := 0; i < 8; i++ {
 			for j := 0; j < 8; j++ {
 
-				/* 
+				/*
 				// Coloreaza patratul peste care este mouseul
 				if x, y := getSquare(); i == x && j == y {
 					_ = square.Fill(color.RGBA{G: 230, B: 64, A: 255})
@@ -174,8 +174,8 @@ func (g *game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeigh
 func initializareMatrice() {
 	// Initializeaza regii
 	util.Board[0][4], util.Board[7][4] = piese.NewPiesa('K', 'B'), piese.NewPiesa('K', 'W')
-	piese.RegeAlb = piese.PozitiePiesa{&util.Board[7][4], 7, 4}
-	piese.RegeNegru = piese.PozitiePiesa{&util.Board[0][4], 0, 4}
+	piese.RegeAlb = piese.PozitiePiesa{Ref: &util.Board[7][4], X: 7, Y: 4}
+	piese.RegeNegru = piese.PozitiePiesa{Ref: &util.Board[0][4], Y: 4}
 
 	// Initializeaza seedul rand-ului
 	rand.Seed(time.Now().Unix())
