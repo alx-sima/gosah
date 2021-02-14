@@ -11,18 +11,21 @@ type Piesa struct {
 	Control       int // 0 inseamna ca nu e controlat de nimeni acel patrat; 1 inseamna ca e controlat de alb, 2 inseamna ca e controlat de negru, 3 inseamna ca e controlat de ambele
 }
 
-// Constructori
+/// Constructori
+
+// Returneaza o noua piesa, initializata
 func NewPiesa(tip, culoare rune) Piesa {
 	e := Piesa{false, false, tip, culoare, 0}
 	return e
 }
 
+// Returneaza o noua piesa "goala"
 func Empty() Piesa {
 	e := Piesa{false, false, 0, 0, 0}
 	return e
 }
 
-// Metode
+/// Metode
 
 // returneaza imaginea piesei ce trebuie desenata, nil daca nu gaseste nimc
 func (p *Piesa) DrawPiece() *ebiten.Image {

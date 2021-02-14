@@ -60,6 +60,15 @@ func (g *game) Update(_ *ebiten.Image) error {
 				board[selected.x][selected.y] = piese.Empty()
 				selected = piesaSelectata{nil, 0, 0}
 
+				if board[x][y].Tip == 'P' {
+					if board[x][y].Culoare == 'W' && x == 0 {
+						board[x][y].Tip = 'Q'
+					}
+					if board[x][y].Culoare == 'B' && x == 7 {
+						board[x][y].Tip = 'Q'
+					}
+				}
+
 				if turn == 'W' {
 					turn = 'B'
 				} else {
