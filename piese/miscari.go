@@ -1,68 +1,5 @@
 package piese
 
-// inBound verifica daca pozitia se afla pe tabla
-func inBound(a, b int) bool {
-	return a >= 0 && b >= 0 && a < 8 && b < 8
-}
-
-// Clear curata tabla de miscari posibile + verifica pentru pozitiile actuale controlul asupra fieccarui patrat
-func Clear(tabla *[8][8]Piesa) {
-	for i := 0; i < 8; i++ {
-		for j := 0; j < 8; j++ {
-			tabla[i][j].Atacat = false
-			tabla[i][j].Control = 0
-		}
-	}
-	verifPatrateAtacate(tabla)
-}
-
-// setareControl seteaza controlul acelui patrat
-func setareControl(patrat *Piesa, culoare rune) {
-	if culoare == 'W' {
-		if patrat.Control == 2 {
-			patrat.Control = 3
-		} else if patrat.Control == 0 {
-			patrat.Control = 1
-		}
-	} else {
-		if patrat.Control == 1 {
-			patrat.Control = 3
-		} else if patrat.Control == 0 {
-			patrat.Control = 2
-		}
-	}
-}
-
-// verifPatrateAtacate verifica pentru fiecare piesa ce patrate ataca si formeaza in tabla.Control o matrice care arata ce culoare controleaza fiecare patrat
-func verifPatrateAtacate(tabla *[8][8]Piesa) {
-	for i := 0; i < 8; i++ {
-		for j := 0; j < 8; j++ {
-			tabla[i][j].Move(tabla, i, j, false, false)
-		}
-	}
-}
-
-// verifIesireSah verifica daca exista miscare care scoate regele din sah
-func verifIesireSah(tabla *[8][8]Piesa, x, y, m, n int) {
-	tabla[m][n].Tip = tabla[x][y].Tip
-	tabla[m][n].Culoare = tabla[x][y].Culoare
-	tabla[x][y].Tip = 0
-	tabla[x][y].Culoare = 0
-	verifPatrateAtacate(tabla)
-
-	if (tabla[RegeNegru.X][RegeNegru.Y].Control == 1 || tabla[RegeNegru.X][RegeNegru.Y].Control == 3) && tabla[x][y].Culoare == 'B' {
-		tabla[m][n].Atacat = true
-	}
-	if (tabla[RegeAlb.X][RegeAlb.Y].Control == 2 || tabla[RegeAlb.X][RegeAlb.Y].Control == 3) && tabla[x][y].Culoare == 'W' {
-		tabla[m][n].Atacat = true
-	}
-
-	tabla[x][y].Tip = tabla[m][n].Tip
-	tabla[x][y].Culoare = tabla[m][n].Culoare
-	tabla[m][n].Tip = 0
-	tabla[m][n].Culoare = 0
-}
-
 // miscareRege cauta miscarile posibile pt regele ales
 func (p *Piesa) miscareRege(tabla *[8][8]Piesa, x, y int, mutare bool) {
 	var dx = []int{x - 1, x - 1, x - 1, x, x + 1, x + 1, x + 1, x}
@@ -77,7 +14,7 @@ func (p *Piesa) miscareRege(tabla *[8][8]Piesa, x, y int, mutare bool) {
 				// Daca alegem sa mutam afiseaza patratele disponibile
 				if mutare {
 					// Daca regele este alb si patratul de coords m, n nu e controlat de negru, regele poate ataca acel patrat
-					if tabla[x][y].Culoare == 'W' && tabla[m][n].Control < 2 {
+					if tabla[x][y].Culoare == 'W' && (tabla[m][n].Control == 1 || tabla[m][n].Control == 0) {
 						tabla[m][n].Atacat = true
 					}
 					// Daca regele este negru si patratul de coords m, n nu e controlat de alb, regele poate ataca acel patrat
@@ -303,6 +240,7 @@ func (p *Piesa) miscareTura(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 		}
 	}
 }
+
 // miscareRegina cauta miscarile posibile pentru regina de la (x, y)
 func (p *Piesa) miscareRegina(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 	// regina se misca ca nebunul si tura
