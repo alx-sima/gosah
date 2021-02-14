@@ -1,8 +1,11 @@
 package piese
 
+var sahAlb, sahNegru bool
+
 func inBound(a, b int) bool {
 	return a >= 0 && b >= 0 && a < 8 && b < 8
 }
+
 func Clear(tabla *[8][8]Piesa) {
 	for i := 0; i < 8; i++ {
 		for j := 0; j < 8; j++ {
@@ -38,17 +41,17 @@ func VerifPatrateAtacate(tabla *[8][8]Piesa) {
 			if tabla[i][j].Tip != 0 {
 				switch tabla[i][j].Tip {
 				case 'K':
-					tabla[i][j].miscareRege(tabla, i, j, 'V')
+					tabla[i][j].miscareRege(tabla, i, j, 'V', false)
 				case 'P':
-					tabla[i][j].miscarePion(tabla, i, j, 'V')
+					tabla[i][j].miscarePion(tabla, i, j, 'V', false)
 				case 'B':
-					tabla[i][j].miscareNebun(tabla, i, j, 'V')
+					tabla[i][j].miscareNebun(tabla, i, j, 'V', false)
 				case 'N':
-					tabla[i][j].miscareCal(tabla, i, j, 'V')
+					tabla[i][j].miscareCal(tabla, i, j, 'V', false)
 				case 'R':
-					tabla[i][j].miscareTura(tabla, i, j, 'V')
+					tabla[i][j].miscareTura(tabla, i, j, 'V', false)
 				case 'Q':
-					tabla[i][j].miscareRegina(tabla, i, j, 'V')
+					tabla[i][j].miscareRegina(tabla, i, j, 'V', false)
 				default:
 					return
 				}
@@ -57,7 +60,27 @@ func VerifPatrateAtacate(tabla *[8][8]Piesa) {
 	}
 }
 
-func (p *Piesa) miscareRege(tabla *[8][8]Piesa, x, y int, utilizare rune) {
+func verifIesireSah(tabla *[8][8]Piesa, x, y, m, n int) {
+	tabla[m][n].Tip = tabla[x][y].Tip
+	tabla[m][n].Culoare = tabla[x][y].Culoare
+	tabla[x][y].Tip = 0
+	tabla[x][y].Culoare = 0
+	VerifPatrateAtacate(tabla)
+
+	if (tabla[RegeNegru.X][RegeNegru.Y].Control == 1 || tabla[RegeNegru.X][RegeNegru.Y].Control == 3) && tabla[x][y].Culoare == 'B' {
+		tabla[m][n].Atacat = true
+	}
+	if (tabla[RegeAlb.X][RegeAlb.Y].Control == 2 || tabla[RegeAlb.X][RegeAlb.Y].Control == 3) && tabla[x][y].Culoare == 'W' {
+		tabla[m][n].Atacat = true
+	}
+
+	tabla[x][y].Tip = tabla[m][n].Tip
+	tabla[x][y].Culoare = tabla[m][n].Culoare
+	tabla[m][n].Tip = 0
+	tabla[m][n].Culoare = 0
+}
+
+func (p *Piesa) miscareRege(tabla *[8][8]Piesa, x, y int, utilizare rune, isSah bool) {
 	var dx = []int{x - 1, x - 1, x - 1, x, x + 1, x + 1, x + 1, x}
 	var dy = []int{y - 1, y, y + 1, y + 1, y + 1, y, y - 1, y - 1}
 	for i := 0; i < 8; i++ {
@@ -79,7 +102,7 @@ func (p *Piesa) miscareRege(tabla *[8][8]Piesa, x, y int, utilizare rune) {
 	}
 }
 
-func (p *Piesa) miscarePion(tabla *[8][8]Piesa, x, y int, utilizare rune) {
+func (p *Piesa) miscarePion(tabla *[8][8]Piesa, x, y int, utilizare rune, isSah bool) {
 	var dy = []int{y - 1, y, y + 1}
 	for i := 0; i < 3; i++ {
 
@@ -90,7 +113,11 @@ func (p *Piesa) miscarePion(tabla *[8][8]Piesa, x, y int, utilizare rune) {
 				if tabla[m][n].Tip != 0 && i != 1 {
 					if tabla[x][y].Culoare != tabla[m][n].Culoare {
 						if utilizare == 'M' {
-							tabla[m][n].Atacat = true
+							if isSah {
+								verifIesireSah(tabla, x, y, m, n)
+							} else {
+								tabla[m][n].Atacat = true
+							}
 						} else {
 							SetareControl(tabla, tabla[x][y].Culoare, m, n)
 						}
@@ -98,7 +125,11 @@ func (p *Piesa) miscarePion(tabla *[8][8]Piesa, x, y int, utilizare rune) {
 				}
 				if utilizare == 'M' {
 					if tabla[m][n].Tip == 0 && i == 1 {
-						tabla[m][n].Atacat = true
+						if isSah {
+							verifIesireSah(tabla, x, y, m, n)
+						} else {
+							tabla[m][n].Atacat = true
+						}
 					}
 				}
 			}
@@ -111,7 +142,11 @@ func (p *Piesa) miscarePion(tabla *[8][8]Piesa, x, y int, utilizare rune) {
 				if tabla[m][n].Tip != 0 && i != 1 {
 					if tabla[x][y].Culoare != tabla[m][n].Culoare {
 						if utilizare == 'M' {
-							tabla[m][n].Atacat = true
+							if isSah {
+								verifIesireSah(tabla, x, y, m, n)
+							} else {
+								tabla[m][n].Atacat = true
+							}
 						} else {
 							SetareControl(tabla, tabla[x][y].Culoare, m, n)
 						}
@@ -119,7 +154,11 @@ func (p *Piesa) miscarePion(tabla *[8][8]Piesa, x, y int, utilizare rune) {
 				}
 				if utilizare == 'M' {
 					if tabla[m][n].Tip == 0 && i == 1 {
-						tabla[m][n].Atacat = true
+						if isSah {
+							verifIesireSah(tabla, x, y, m, n)
+						} else {
+							tabla[m][n].Atacat = true
+						}
 					}
 				}
 			}
@@ -131,19 +170,27 @@ func (p *Piesa) miscarePion(tabla *[8][8]Piesa, x, y int, utilizare rune) {
 		if tabla[x][y].Mutat == false {
 			if tabla[x][y].Culoare == 'W' {
 				if tabla[x-1][y].Tip == 0 && tabla[x-2][y].Tip == 0 {
-					tabla[x-2][y].Atacat = true
+					if isSah {
+						verifIesireSah(tabla, x, y, x-2, y)
+					} else {
+						tabla[x-2][y].Atacat = true
+					}
 				}
 			}
 			if tabla[x][y].Culoare == 'B' {
 				if tabla[x+1][y].Tip == 0 && tabla[x+2][y].Tip == 0 {
-					tabla[x+2][y].Atacat = true
+					if isSah {
+						verifIesireSah(tabla, x, y, x-2, y)
+					} else {
+						tabla[x-2][y].Atacat = true
+					}
 				}
 			}
 		}
 	}
 }
 
-func (p *Piesa) miscareNebun(tabla *[8][8]Piesa, x, y int, utilizare rune) {
+func (p *Piesa) miscareNebun(tabla *[8][8]Piesa, x, y int, utilizare rune, isSah bool) {
 	var dx = []int{-1, -1, 1, 1}
 	var dy = []int{-1, 1, -1, 1}
 	for i := 0; i < 4; i++ {
@@ -152,6 +199,9 @@ func (p *Piesa) miscareNebun(tabla *[8][8]Piesa, x, y int, utilizare rune) {
 			m, n := x+j*dx[i], y+j*dy[i]
 
 			if inBound(m, n) {
+
+				if isSah {
+				}
 
 				// Daca vede o piesa de aceeasi culoare, se termina cautarea pe acea diagonala
 				if tabla[x][y].Culoare == tabla[m][n].Culoare {
@@ -163,7 +213,11 @@ func (p *Piesa) miscareNebun(tabla *[8][8]Piesa, x, y int, utilizare rune) {
 					break
 				} else {
 					if utilizare == 'M' {
-						tabla[m][n].Atacat = true
+						if isSah {
+							verifIesireSah(tabla, x, y, m, n)
+						} else {
+							tabla[m][n].Atacat = true
+						}
 					} else {
 						SetareControl(tabla, tabla[x][y].Culoare, m, n)
 					}
@@ -178,7 +232,7 @@ func (p *Piesa) miscareNebun(tabla *[8][8]Piesa, x, y int, utilizare rune) {
 	}
 }
 
-func (p *Piesa) miscareCal(tabla *[8][8]Piesa, x, y int, utilizare rune) {
+func (p *Piesa) miscareCal(tabla *[8][8]Piesa, x, y int, utilizare rune, isSah bool) {
 	var dx = []int{-2, -1, -1, -2, 2, 1, 1, 2}
 	var dy = []int{-1, -2, 2, 1, -1, -2, 2, 1}
 	for i := 0; i < 8; i++ {
@@ -188,7 +242,11 @@ func (p *Piesa) miscareCal(tabla *[8][8]Piesa, x, y int, utilizare rune) {
 		if inBound(m, n) {
 			if tabla[x][y].Culoare != tabla[m][n].Culoare {
 				if utilizare == 'M' {
-					tabla[m][n].Atacat = true
+					if isSah {
+						verifIesireSah(tabla, x, y, m, n)
+					} else {
+						tabla[m][n].Atacat = true
+					}
 				} else {
 					SetareControl(tabla, tabla[x][y].Culoare, m, n)
 				}
@@ -199,7 +257,7 @@ func (p *Piesa) miscareCal(tabla *[8][8]Piesa, x, y int, utilizare rune) {
 	}
 }
 
-func (p *Piesa) miscareTura(tabla *[8][8]Piesa, x, y int, utilizare rune) {
+func (p *Piesa) miscareTura(tabla *[8][8]Piesa, x, y int, utilizare rune, isSah bool) {
 	var dx = []int{-1, 0, 1, 0}
 	var dy = []int{0, 1, 0, -1}
 	for i := 0; i < 4; i++ {
@@ -218,7 +276,11 @@ func (p *Piesa) miscareTura(tabla *[8][8]Piesa, x, y int, utilizare rune) {
 					break
 				} else {
 					if utilizare == 'M' {
-						tabla[m][n].Atacat = true
+						if isSah {
+							verifIesireSah(tabla, x, y, m, n)
+						} else {
+							tabla[m][n].Atacat = true
+						}
 					} else {
 						SetareControl(tabla, tabla[x][y].Culoare, m, n)
 					}
@@ -233,7 +295,7 @@ func (p *Piesa) miscareTura(tabla *[8][8]Piesa, x, y int, utilizare rune) {
 	}
 }
 
-func (p *Piesa) miscareRegina(tabla *[8][8]Piesa, x, y int, utilizare rune) {
-	p.miscareNebun(tabla, x, y, utilizare)
-	p.miscareTura(tabla, x, y, utilizare)
+func (p *Piesa) miscareRegina(tabla *[8][8]Piesa, x, y int, utilizare rune, isSah bool) {
+	p.miscareNebun(tabla, x, y, utilizare, isSah)
+	p.miscareTura(tabla, x, y, utilizare, isSah)
 }

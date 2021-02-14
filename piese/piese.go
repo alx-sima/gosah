@@ -5,11 +5,20 @@ import (
 	"github.com/hajimehoshi/ebiten/ebitenutil"
 )
 
+// Piesa tine informatii despre un patrat de pe tabla
 type Piesa struct {
 	Atacat, Mutat bool
 	Tip, Culoare  rune
 	Control       int // 0 inseamna ca nu e controlat de nimeni acel patrat; 1 inseamna ca e controlat de alb, 2 inseamna ca e controlat de negru, 3 inseamna ca e controlat de ambele
 }
+
+
+// PozitiePiesa tine piesa si pozitia ei
+type PozitiePiesa struct {
+	Ref  *Piesa
+	X, Y int
+}
+var RegeAlb, RegeNegru PozitiePiesa      
 
 /// Constructori
 
@@ -19,7 +28,7 @@ func NewPiesa(tip, culoare rune) Piesa {
 	return e
 }
 
-// Returneaza o noua piesa "goala"
+// Empty eturneaza o noua piesa "goala"
 func Empty() Piesa {
 	e := Piesa{false, false, 0, 0, 0}
 	return e
@@ -57,20 +66,20 @@ func (p *Piesa) DrawPiece() *ebiten.Image {
 }
 
 // Verifica pe ce patrate se poate misca o anumita piesa
-func (p Piesa) Move(tabla *[8][8]Piesa, x, y int) {
+func (p Piesa) Move(tabla *[8][8]Piesa, x, y int, isSah bool) {
 	switch p.Tip {
 	case 'K':
-		p.miscareRege(tabla, x, y, 'M')
+		p.miscareRege(tabla, x, y, 'M', isSah)
 	case 'P':
-		p.miscarePion(tabla, x, y, 'M')
+		p.miscarePion(tabla, x, y, 'M', isSah)
 	case 'B':
-		p.miscareNebun(tabla, x, y, 'M')
+		p.miscareNebun(tabla, x, y, 'M', isSah)
 	case 'N':
-		p.miscareCal(tabla, x, y, 'M')
+		p.miscareCal(tabla, x, y, 'M', isSah)
 	case 'R':
-		p.miscareTura(tabla, x, y, 'M')
+		p.miscareTura(tabla, x, y, 'M', isSah)
 	case 'Q':
-		p.miscareRegina(tabla, x, y, 'M')
+		p.miscareRegina(tabla, x, y, 'M', isSah)
 	default:
 		return
 	}
