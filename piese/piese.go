@@ -25,7 +25,7 @@ var (
 
 /// Constructori
 
-// Returneaza o noua piesa, initializata
+// NewPiesa returneaza o noua piesa, initializata
 func NewPiesa(tip, culoare rune) Piesa {
 	e := Piesa{false, false, tip, culoare, 0}
 	return e

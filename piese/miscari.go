@@ -13,28 +13,28 @@ func Clear(tabla *[8][8]Piesa) {
 			tabla[i][j].Control = 0
 		}
 	}
-	VerifPatrateAtacate(tabla)
+	verifPatrateAtacate(tabla)
 }
 
 // Seteaza controlul acelui patrat
-func SetareControl(tabla *[8][8]Piesa, culoare rune, x, y int) {
+func setareControl(patrat *Piesa, culoare rune) {
 	if culoare == 'W' {
-		if tabla[x][y].Control == 2 {
-			tabla[x][y].Control = 3
-		} else if tabla[x][y].Control == 0 {
-			tabla[x][y].Control = 1
+		if patrat.Control == 2 {
+			patrat.Control = 3
+		} else if patrat.Control == 0 {
+			patrat.Control = 1
 		}
 	} else {
-		if tabla[x][y].Control == 1 {
-			tabla[x][y].Control = 3
-		} else if tabla[x][y].Control == 0 {
-			tabla[x][y].Control = 2
+		if patrat.Control == 1 {
+			patrat.Control = 3
+		} else if patrat.Control == 0 {
+			patrat.Control = 2
 		}
 	}
 }
 
 // Verifica pentru fiecare piesa ce patrate ataca si formeaza in tabla.Control o matrice care arata ce culoare controleaza fiecare patrat
-func VerifPatrateAtacate(tabla *[8][8]Piesa) {
+func verifPatrateAtacate(tabla *[8][8]Piesa) {
 	for i := 0; i < 8; i++ {
 		for j := 0; j < 8; j++ {
 			tabla[i][j].Move(tabla, i, j, false, false)
@@ -47,7 +47,7 @@ func verifIesireSah(tabla *[8][8]Piesa, x, y, m, n int) {
 	tabla[m][n].Culoare = tabla[x][y].Culoare
 	tabla[x][y].Tip = 0
 	tabla[x][y].Culoare = 0
-	VerifPatrateAtacate(tabla)
+	verifPatrateAtacate(tabla)
 
 	if (tabla[RegeNegru.X][RegeNegru.Y].Control == 1 || tabla[RegeNegru.X][RegeNegru.Y].Control == 3) && tabla[x][y].Culoare == 'B' {
 		tabla[m][n].Atacat = true
@@ -77,7 +77,7 @@ func (p *Piesa) miscareRege(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 						tabla[m][n].Atacat = true
 					}
 				} else {
-					SetareControl(tabla, tabla[x][y].Culoare, m, n)
+					setareControl(&tabla[m][n], tabla[x][y].Culoare)
 				}
 			}
 		}
@@ -101,7 +101,7 @@ func (p *Piesa) miscarePion(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 								tabla[m][n].Atacat = true
 							}
 						} else {
-							SetareControl(tabla, tabla[x][y].Culoare, m, n)
+							setareControl(&tabla[m][n], tabla[x][y].Culoare)
 						}
 					}
 				}
@@ -130,7 +130,7 @@ func (p *Piesa) miscarePion(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 								tabla[m][n].Atacat = true
 							}
 						} else {
-							SetareControl(tabla, tabla[x][y].Culoare, m, n)
+							setareControl(&tabla[m][n], tabla[x][y].Culoare)
 						}
 					}
 				}
@@ -189,7 +189,7 @@ func (p *Piesa) miscareNebun(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 				if tabla[x][y].Culoare == tabla[m][n].Culoare {
 
 					if !mutare {
-						SetareControl(tabla, tabla[x][y].Culoare, m, n)
+						setareControl(&tabla[m][n], tabla[x][y].Culoare)
 					}
 
 					break
@@ -201,7 +201,7 @@ func (p *Piesa) miscareNebun(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 							tabla[m][n].Atacat = true
 						}
 					} else {
-						SetareControl(tabla, tabla[x][y].Culoare, m, n)
+						setareControl(&tabla[m][n], tabla[x][y].Culoare)
 					}
 
 					// Daca vede o piesa de alta culoare, afiseaza ca poate ataca acel patrat, dupa care opreste cautarea pe acea diagonala
@@ -230,10 +230,10 @@ func (p *Piesa) miscareCal(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 						tabla[m][n].Atacat = true
 					}
 				} else {
-					SetareControl(tabla, tabla[x][y].Culoare, m, n)
+					setareControl(&tabla[m][n], tabla[x][y].Culoare)
 				}
 			} else {
-				SetareControl(tabla, tabla[x][y].Culoare, m, n)
+				setareControl(&tabla[m][n], tabla[x][y].Culoare)
 			}
 		}
 	}
@@ -242,19 +242,17 @@ func (p *Piesa) miscareCal(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 func (p *Piesa) miscareTura(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 	var dx = []int{-1, 0, 1, 0}
 	var dy = []int{0, 1, 0, -1}
+
 	for i := 0; i < 4; i++ {
 		for j := 1; j < 8; j++ {
-
 			m, n := x+j*dx[i], y+j*dy[i]
 
 			if inBound(m, n) {
-
 				// Daca vede o piesa de aceeasi culoare, se termina cautarea pe acea linie/coloana
 				if tabla[x][y].Culoare == tabla[m][n].Culoare {
 					if !mutare {
-						SetareControl(tabla, tabla[x][y].Culoare, m, n)
+						setareControl(&tabla[m][n], tabla[x][y].Culoare)
 					}
-
 					break
 				} else {
 					if mutare {
@@ -264,7 +262,7 @@ func (p *Piesa) miscareTura(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 							tabla[m][n].Atacat = true
 						}
 					} else {
-						SetareControl(tabla, tabla[x][y].Culoare, m, n)
+						setareControl(&tabla[m][n], tabla[x][y].Culoare)
 					}
 
 					// Daca vede o piesa de alta culoare, afiseaza ca poate ataca acel patrat, dupa care opreste cautarea pe acea linie/coloana
