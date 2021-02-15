@@ -78,7 +78,7 @@ func (p *Piesa) DrawPiece() *ebiten.Image {
 func (p Piesa) Move(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 	switch p.Tip {
 	case 'K':
-		p.miscareRege(tabla, x, y, mutare)
+		p.miscareRege(tabla, x, y, mutare, isSah)
 	case 'P':
 		p.miscarePion(tabla, x, y, mutare, isSah)
 	case 'B':

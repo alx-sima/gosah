@@ -1,7 +1,7 @@
 package piese
 
 // miscareRege cauta miscarile posibile pt regele ales
-func (p *Piesa) miscareRege(tabla *[8][8]Piesa, x, y int, mutare bool) {
+func (p *Piesa) miscareRege(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 	var dx = []int{x - 1, x - 1, x - 1, x, x + 1, x + 1, x + 1, x}
 	var dy = []int{y - 1, y, y + 1, y + 1, y + 1, y, y - 1, y - 1}
 
@@ -9,11 +9,9 @@ func (p *Piesa) miscareRege(tabla *[8][8]Piesa, x, y int, mutare bool) {
 	if mutare == true && !tabla[x][y].Mutat {
 		if verifRocada(x, y, -4) {
 			tabla[x][y-2].Atacat = true
-			// FIXME
 		}
 		if verifRocada(x, y, +3) {
 			tabla[x][y+2].Atacat = true
-			// FIXME
 		}
 	}
 	for i := 0; i < 8; i++ {
@@ -34,7 +32,14 @@ func (p *Piesa) miscareRege(tabla *[8][8]Piesa, x, y int, mutare bool) {
 						tabla[m][n].Atacat = true
 					}
 				} else {
-					setareControl(&tabla[m][n], tabla[x][y].Culoare)
+					if isSah {
+						if !verifSah(tabla, x, y, m, n) {
+							Mat = false
+						}
+					} else {
+						setareControl(&tabla[m][n], tabla[x][y].Culoare)
+					}
+
 				}
 			}
 		}
@@ -63,19 +68,31 @@ func (p *Piesa) miscarePion(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 								}
 							}
 						} else {
-							setareControl(&tabla[m][n], tabla[x][y].Culoare)
+							if isSah {
+								if !verifSah(tabla, x, y, m, n) {
+									Mat = false
+								}
+							} else {
+								setareControl(&tabla[m][n], tabla[x][y].Culoare)
+							}
 						}
 					}
 				}
 				// Verifica daca poti muta pionul un patrat in fata
-				if mutare {
-					if tabla[m][n].Tip == 0 && i == 1 {
+				if tabla[m][n].Tip == 0 && i == 1 {
+					if mutare {
 						// Daca regele se afla in sah, verificam daca aceasta mutare il scaote din sah
 						if isSah {
 							verifIesireSah(tabla, x, y, m, n)
 						} else {
 							if !verifSah(tabla, x, y, m, n) {
 								tabla[m][n].Atacat = true
+							}
+						}
+					} else {
+						if isSah {
+							if !verifSah(tabla, x, y, m, n) {
+								Mat = false
 							}
 						}
 					}
@@ -100,19 +117,31 @@ func (p *Piesa) miscarePion(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 								}
 							}
 						} else {
-							setareControl(&tabla[m][n], tabla[x][y].Culoare)
+							if isSah {
+								if !verifSah(tabla, x, y, m, n) {
+									Mat = false
+								}
+							} else {
+								setareControl(&tabla[m][n], tabla[x][y].Culoare)
+							}
 						}
 					}
 				}
 				// Verifica daca poti muta pionul un patrat in fata
-				if mutare {
-					if tabla[m][n].Tip == 0 && i == 1 {
+				if tabla[m][n].Tip == 0 && i == 1 {
+					if mutare {
 						// Daca regele se afla in sah, verificam daca aceasta mutare il scaote din sah
 						if isSah {
 							verifIesireSah(tabla, x, y, m, n)
 						} else {
 							if !verifSah(tabla, x, y, m, n) {
 								tabla[m][n].Atacat = true
+							}
+						}
+					} else {
+						if isSah {
+							if !verifSah(tabla, x, y, m, n) {
+								Mat = false
 							}
 						}
 					}
@@ -122,13 +151,13 @@ func (p *Piesa) miscarePion(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 	}
 
 	// Verifica daca piesa poate parcurge 2 patrate
-	if mutare {
-		// Daca a fost mutat deja, nu mai poate parcurge 2 patrate
-		if tabla[x][y].Mutat == false {
-			if tabla[x][y].Culoare == 'W' {
-				// Verifica daca urmatoarele doua patrate sunt libere
-				if tabla[x-1][y].Tip == 0 && tabla[x-2][y].Tip == 0 {
-					// Daca regele se afla in sah, verificam daca aceasta mutare il scaote din sah
+	// Daca a fost mutat deja, nu mai poate parcurge 2 patrate
+	if tabla[x][y].Mutat == false {
+		if tabla[x][y].Culoare == 'W' {
+			// Verifica daca urmatoarele doua patrate sunt libere
+			if tabla[x-1][y].Tip == 0 && tabla[x-2][y].Tip == 0 {
+				// Daca regele se afla in sah, verificam daca aceasta mutare il scaote din sah
+				if mutare {
 					if isSah {
 						verifIesireSah(tabla, x, y, x-2, y)
 					} else {
@@ -136,17 +165,31 @@ func (p *Piesa) miscarePion(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 							tabla[x-2][y].Atacat = true
 						}
 					}
+				} else {
+					if isSah {
+						if !verifSah(tabla, x, y, x-2, y) {
+							Mat = false
+						}
+					}
 				}
 			}
-			if tabla[x][y].Culoare == 'B' {
-				// Verifica daca urmatoarele doua patrate sunt libere
-				if tabla[x+1][y].Tip == 0 && tabla[x+2][y].Tip == 0 {
-					// Daca regele se afla in sah, verificam daca aceasta mutare il scaote din sah
+		}
+		if tabla[x][y].Culoare == 'B' {
+			// Verifica daca urmatoarele doua patrate sunt libere
+			if tabla[x+1][y].Tip == 0 && tabla[x+2][y].Tip == 0 {
+				// Daca regele se afla in sah, verificam daca aceasta mutare il scaote din sah
+				if mutare {
 					if isSah {
 						verifIesireSah(tabla, x, y, x+2, y)
 					} else {
 						if !verifSah(tabla, x, y, x+2, y) {
 							tabla[x+2][y].Atacat = true
+						}
+					}
+				} else {
+					if isSah {
+						if !verifSah(tabla, x, y, x-2, y) {
+							Mat = false
 						}
 					}
 				}
@@ -187,7 +230,13 @@ func (p *Piesa) miscareNebun(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 							tabla[m][n].Atacat = true
 						}
 					} else {
-						setareControl(&tabla[m][n], tabla[x][y].Culoare)
+						if isSah {
+							if !verifSah(tabla, x, y, m, n) {
+								Mat = false
+							}
+						} else {
+							setareControl(&tabla[m][n], tabla[x][y].Culoare)
+						}
 					}
 
 					// Daca vede o piesa de alta culoare, afiseaza ca poate ataca acel patrat, dupa care opreste cautarea pe acea diagonala
@@ -227,7 +276,13 @@ func (p *Piesa) miscareCal(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 						}
 					}
 				} else {
-					setareControl(&tabla[m][n], tabla[x][y].Culoare)
+					if isSah {
+						if !verifSah(tabla, x, y, m, n) {
+							Mat = false
+						}
+					} else {
+						setareControl(&tabla[m][n], tabla[x][y].Culoare)
+					}
 				}
 			} else {
 				setareControl(&tabla[m][n], tabla[x][y].Culoare)
@@ -267,7 +322,13 @@ func (p *Piesa) miscareTura(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 							tabla[m][n].Atacat = true
 						}
 					} else {
-						setareControl(&tabla[m][n], tabla[x][y].Culoare)
+						if isSah {
+							if !verifSah(tabla, x, y, m, n) {
+								Mat = false
+							}
+						} else {
+							setareControl(&tabla[m][n], tabla[x][y].Culoare)
+						}
 					}
 
 					// Daca vede o piesa de alta culoare, afiseaza ca poate ataca acel patrat, dupa care opreste cautarea pe acea linie/coloana

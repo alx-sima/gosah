@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"gosah/piese"
 	"image/color"
 	"log"
@@ -40,7 +39,7 @@ func (g *game) Update(_ *ebiten.Image) error {
 			piese.AfisarePatrateAtacate(x, y)
 		}
 
-		// Afisare matrice (doar pt testing)
+		/* Afisare matrice (doar pt testing)
 		for i := 0; i < 8; i++ {
 			fmt.Print(i+1, "     ")
 			for j := 0; j < 8; j++ {
@@ -48,7 +47,7 @@ func (g *game) Update(_ *ebiten.Image) error {
 			}
 			fmt.Print("\n")
 		}
-		fmt.Println("=====================================")
+		fmt.Println("=====================================")*/
 	}
 	//fmt.Println(ebiten.CurrentFPS())
 	return nil
@@ -124,9 +123,8 @@ func (g *game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeigh
 
 func main() {
 	// Initializeaza matricea, jocul si tura
-	piese.InitializareMatriceRandomOglindit()
+	piese.Init("random")
 	g := &game{}
-	piese.Turn = 'W'
 
 	// Nu mai da clear la fiecare frame
 	ebiten.SetScreenClearedEveryFrame(false)

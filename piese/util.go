@@ -2,26 +2,9 @@ package piese
 
 import (
 	"fmt"
-	"math/rand"
 	"time"
 
 	"github.com/hajimehoshi/ebiten"
-)
-
-const (
-	Width  = 1920       // Width retine lungimea ecranului
-	Height = 1080       // Height retine inaltimea ecranului
-	L      = Height / 8 // L retine latura unui patrat
-)
-
-var (
-	Board    [8][8]Piesa  // Board retine tabla de joc
-	Selected PozitiePiesa //Selected retine piesa pe care s-a dat click
-	Clicked  bool         // Clicked retine daca fost dat click pe o piesa
-	Changed  bool         // Changed retine daca trebuie (re)desenat ecranul
-	SahAlb   bool         // SahAlb retine daca regele alb e in sah
-	SahNegru bool         // SahNegru retine daca regele negru e in sah
-	Turn     rune         // Turn retine 'W' daca e randul albului, sau 'B' daca e randul negrului
 )
 
 // GetSquare returneaza patratul in care se afla mouse-ul
@@ -124,12 +107,14 @@ func Mutare() {
 			// Verifica daca regele negru e in sah
 			if Board[RegeNegru.X][RegeNegru.Y].eControlatDeCuloare('W') {
 				SahNegru = true
+				verifMat(Board[RegeNegru.X][RegeNegru.Y].Culoare)
 			}
 			Turn = 'B'
 		} else {
 			// Verifica daca regele alb e in sah
 			if Board[RegeAlb.X][RegeAlb.Y].eControlatDeCuloare('B') {
 				SahAlb = true
+				verifMat(Board[RegeAlb.X][RegeAlb.Y].Culoare)
 			}
 			Turn = 'W'
 		}
@@ -138,115 +123,16 @@ func Mutare() {
 	}
 }
 
-// InitializareMatriceRandomOglindit genereaza piesele aleatoare pt. tabla de joc
-func InitializareMatriceRandomOglindit() {
-	// Initializeaza regii
-	Board[0][4] = NewPiesa('K', 'B')
-	RegeNegru = PozitiePiesa{Ref: &Board[0][4], Y: 4}
-	Board[7][4] = NewPiesa('K', 'W')
-	RegeAlb = PozitiePiesa{Ref: &Board[7][4], X: 7, Y: 4}
-
-	// Initializeaza seedul rand-ului
-	rand.Seed(time.Now().Unix())
-
-	for i := 0; i < 2; i++ {
-		for j := 0; j < 8; j++ {
-			// Genereaza piese aleatoriu (mai putin pe pozitia regilor)
-			if !(i == 0 && j == 4) {
-				r := rand.Int()
-				switch r % 5 {
-				case 0:
-					// Pion
-					Board[i][j], Board[7-i][j] = NewPiesa('P', 'B'), NewPiesa('P', 'W')
-				case 1:
-					// Nebun
-					Board[i][j], Board[7-i][j] = NewPiesa('B', 'B'), NewPiesa('B', 'W')
-				case 2:
-					// Cal
-					Board[i][j], Board[7-i][j] = NewPiesa('N', 'B'), NewPiesa('N', 'W')
-				case 3:
-					// Tura
-					Board[i][j], Board[7-i][j] = NewPiesa('R', 'B'), NewPiesa('R', 'W')
-				case 4:
-					// Regina
-					Board[i][j], Board[7-i][j] = NewPiesa('Q', 'B'), NewPiesa('Q', 'W')
-				}
+func verifMat(culoare rune) {
+	Mat = true
+	for i := 0; i < 8 && Mat; i++ {
+		for j := 0; j < 8 && Mat; j++ {
+			if Board[i][j].Culoare == culoare {
+				Board[i][j].Move(&Board, i, j, false, true)
 			}
 		}
 	}
-
-	// FIXME: FOR TESTING PURPOSES
-	for i := 0; i < 8; i++ {
-		for j := 0; j < 8; j++ {
-			fmt.Printf("%c ", Board[i][j].Tip)
-		}
-		fmt.Println()
+	if Mat {
+		fmt.Println("Ai pierdut, cioaraaaa")
 	}
-	fmt.Println("================")
-
-	// FIXME: Cronometru
-	// go cronometru()
-}
-
-// InitializareMatriceClasic initializeaza tabla unui joc clasic de sah
-func InitializareMatriceClasic() {
-	// Initializare
-	piese := "RNBQKBNR"
-	for i := 0; i < 8; i++ {
-		Board[0][i] = NewPiesa(rune(piese[i]), 'B')
-		Board[7][i] = NewPiesa(rune(piese[i]), 'W')
-		Board[1][i] = NewPiesa('P', 'B')
-		Board[6][i] = NewPiesa('P', 'W')
-	}
-	RegeNegru = PozitiePiesa{Ref: &Board[0][4], Y: 4}
-	RegeAlb = PozitiePiesa{Ref: &Board[7][4], X: 7, Y: 4}
-}
-
-// returneaza daca regele de la (x, y) poate face rocada la (x, y + n)
-func verifRocada(x, y, n int) bool {
-	// Daca regele sau tura au fost mutate, rocada nu e posibila
-	if Board[x][y+n].Mutat {
-		return false
-	}
-	// Daca piesa de la (m, n) nu e o tura, rocada nu e posibila
-	if Board[x][y+n].Tip != 'R' {
-		return false
-	}
-	// semn retine 1 daca n e pozitiv, -1 daca nu (pentru a cauta in ambele directii)
-	var semn int
-	if n >= 0 {
-		semn = 1
-	} else {
-		semn = -1
-	}
-	// Verifica daca calea de la rege la tura e goala
-	// FIXME: merge doar spre dreapta
-	for i := 1; i < semn*n; i++ {
-		if Board[x][y+semn*i].Tip != 0 {
-			return false
-		}
-	}
-	// Verifica daca regele nu va ajunge in sah
-	for i := 0; i < semn*3; i++ {
-		if Board[x][y].Culoare == 'W' {
-			if Board[x][y+semn*i].eControlatDeCuloare('B') {
-				return false
-			}
-		} else if Board[x][y].Culoare == 'B' {
-			if Board[x][y+semn*i].eControlatDeCuloare('W') {
-				return false
-			}
-		}
-	}
-	return true
-}
-
-// eControlatDeCuloare verifica daca echipa culoare controleaza patratul dat
-func (p *Piesa) eControlatDeCuloare(culoare rune) bool {
-	if culoare == 'W' {
-		return p.Control == 1 || p.Control == 3
-	} else if culoare == 'B' {
-		return p.Control == 2 || p.Control == 3
-	}
-	return false
 }
