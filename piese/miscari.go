@@ -58,7 +58,9 @@ func (p *Piesa) miscarePion(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 							if isSah {
 								verifIesireSah(tabla, x, y, m, n)
 							} else {
-								tabla[m][n].Atacat = true
+								if !verifSah(tabla, x, y, m, n) {
+									tabla[m][n].Atacat = true
+								}
 							}
 						} else {
 							setareControl(&tabla[m][n], tabla[x][y].Culoare)
@@ -72,7 +74,9 @@ func (p *Piesa) miscarePion(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 						if isSah {
 							verifIesireSah(tabla, x, y, m, n)
 						} else {
-							tabla[m][n].Atacat = true
+							if !verifSah(tabla, x, y, m, n) {
+								tabla[m][n].Atacat = true
+							}
 						}
 					}
 				}
@@ -91,7 +95,9 @@ func (p *Piesa) miscarePion(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 							if isSah {
 								verifIesireSah(tabla, x, y, m, n)
 							} else {
-								tabla[m][n].Atacat = true
+								if !verifSah(tabla, x, y, m, n) {
+									tabla[m][n].Atacat = true
+								}
 							}
 						} else {
 							setareControl(&tabla[m][n], tabla[x][y].Culoare)
@@ -105,7 +111,9 @@ func (p *Piesa) miscarePion(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 						if isSah {
 							verifIesireSah(tabla, x, y, m, n)
 						} else {
-							tabla[m][n].Atacat = true
+							if !verifSah(tabla, x, y, m, n) {
+								tabla[m][n].Atacat = true
+							}
 						}
 					}
 				}
@@ -124,7 +132,9 @@ func (p *Piesa) miscarePion(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 					if isSah {
 						verifIesireSah(tabla, x, y, x-2, y)
 					} else {
-						tabla[x-2][y].Atacat = true
+						if !verifSah(tabla, x, y, x-2, y) {
+							tabla[x-2][y].Atacat = true
+						}
 					}
 				}
 			}
@@ -135,7 +145,9 @@ func (p *Piesa) miscarePion(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 					if isSah {
 						verifIesireSah(tabla, x, y, x+2, y)
 					} else {
-						tabla[x+2][y].Atacat = true
+						if !verifSah(tabla, x, y, x+2, y) {
+							tabla[x+2][y].Atacat = true
+						}
 					}
 				}
 			}

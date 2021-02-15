@@ -19,9 +19,9 @@ var (
 	Selected PozitiePiesa //Selected retine piesa pe care s-a dat click
 	Clicked  bool         // Clicked retine daca fost dat click pe o piesa
 	Changed  bool         // Changed retine daca trebuie (re)desenat ecranul
-	SahAlb   bool
-	SahNegru bool
-	Turn     rune // Turn retine 'W' daca e randul albului, sau 'B' daca e randul negrului
+	SahAlb   bool         // SahAlb retine daca regele alb e in sah
+	SahNegru bool         // SahNegru retine daca regele negru e in sah
+	Turn     rune         // Turn retine 'W' daca e randul albului, sau 'B' daca e randul negrului
 )
 
 // GetSquare returneaza patratul in care se afla mouse-ul
