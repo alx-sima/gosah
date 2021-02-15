@@ -56,25 +56,34 @@ func AfisarePatrateAtacate(x, y int) {
 // Mutare muta piesa selectata pe pozitia ceruta
 func Mutare() {
 	if x, y := GetSquare(); Board[x][y].Atacat {
-		Changed = true
 
 		// Translateaza piesa din selected pe pozitia (x, y)
 		Board[x][y] = *Selected.Ref
 		Board[x][y].Mutat = true
-
+		// Verifica daca mutarea provoaca o rocada
+		if Board[x][y].Tip == 'K' {
+			// In dreapta
+			if y-Selected.Y == 2 {
+				Board[x][y-1], Board[x][y+1] = Board[x][y+1], Board[x][y-1]
+				// In stanga
+			} else if Selected.Y-y == 2 {
+				Board[x][y+1], Board[x][y-2] = Board[x][y-2], Board[x][y+1]
+			}
+		}
+		// IMPORTANT!  aceasta verificare pentru pion trebuie facuta inainte de clear
 		// Daca piesa captureaza prin en passant, elimina piesa capturata de pe tabla
-		if Board[x-1][y].EnPassant && Selected.X - x == -1 && (Selected.Y - y == 1 || Selected.Y - y == -1) {
-			Board[x-1][y] = Empty()
-		}
-		if Board[x+1][y].EnPassant && Selected.X - x == 1 && (Selected.Y - y == 1 || Selected.Y - y == -1) {
-			Board[x+1][y] = Empty()
-		}
-
-		// Reseteaza tabla de sah si de pozitii atacate
-		SahAlb, SahNegru = false, false
-		Clear(&Board, true)
-
 		if Board[x][y].Tip == 'P' {
+			if inBound(x-1, y) {
+				if Board[x-1][y].EnPassant && Selected.X-x == -1 && (Selected.Y-y == 1 || Selected.Y-y == -1) {
+					Board[x-1][y] = Empty()
+				}
+			}
+			if inBound(x+1, y) {
+				if Board[x+1][y].EnPassant && Selected.X-x == 1 && (Selected.Y-y == 1 || Selected.Y-y == -1) {
+					Board[x+1][y] = Empty()
+				}
+			}
+
 			// Transforma pionul in regina cand ajunge la capat
 			if Board[x][y].Culoare == 'W' && x == 0 {
 				Board[x][y].Tip = 'Q'
@@ -82,6 +91,15 @@ func Mutare() {
 			if Board[x][y].Culoare == 'B' && x == 7 {
 				Board[x][y].Tip = 'Q'
 			}
+		}
+
+		// Reseteaza tabla de sah si de pozitii atacate
+		SahAlb, SahNegru = false, false
+		Clear(&Board, true)
+
+		// IMPORTANT!  aceasta verificare pentru pion trebuie facuta dupa de clear
+		if Board[x][y].Tip == 'P' {
+
 			// Daca pionul s-a mutat 2 patratele, retine ca e apt pt. en passant
 			if Selected.X-x == 2 || Selected.X-x == -2 {
 				Board[x][y].EnPassant = true
@@ -105,19 +123,19 @@ func Mutare() {
 		// Schimba tura de joc
 		if Turn == 'W' {
 			// Verifica daca regele negru e in sah
-			ctrlRege := Board[RegeNegru.X][RegeNegru.Y].Control
-			if ctrlRege == 1 || ctrlRege == 3 {
+			if Board[RegeNegru.X][RegeNegru.Y].eControlatDeCuloare('W') {
 				SahNegru = true
 			}
 			Turn = 'B'
 		} else {
 			// Verifica daca regele alb e in sah
-			ctrlRege := Board[RegeAlb.X][RegeAlb.Y].Control
-			if ctrlRege == 2 || ctrlRege == 3 {
+			if Board[RegeAlb.X][RegeAlb.Y].eControlatDeCuloare('B') {
 				SahAlb = true
 			}
 			Turn = 'W'
 		}
+
+		Changed = true
 	}
 }
 
@@ -176,14 +194,60 @@ func InitializareMatriceClasic() {
 	// Initializare
 	piese := "RNBQKBNR"
 	for i := 0; i < 8; i++ {
-		Board[0][i] = NewPiesa(rune(piese[i]), 'B') 
+		Board[0][i] = NewPiesa(rune(piese[i]), 'B')
 		Board[7][i] = NewPiesa(rune(piese[i]), 'W')
 		Board[1][i] = NewPiesa('P', 'B')
 		Board[6][i] = NewPiesa('P', 'W')
 	}
+	RegeNegru = PozitiePiesa{Ref: &Board[0][4], Y: 4}
+	RegeAlb = PozitiePiesa{Ref: &Board[7][4], X: 7, Y: 4}
 }
 
-// TODO: verifRocada 
-func verifRocada() bool {
+// returneaza daca regele de la (x, y) poate face rocada la (x, y + n)
+func verifRocada(x, y, n int) bool {
+	// Daca regele sau tura au fost mutate, rocada nu e posibila
+	if Board[x][y+n].Mutat {
+		return false
+	}
+	// Daca piesa de la (m, n) nu e o tura, rocada nu e posibila
+	if Board[x][y+n].Tip != 'R' {
+		return false
+	}
+	// semn retine 1 daca n e pozitiv, -1 daca nu (pentru a cauta in ambele directii)
+	var semn int
+	if n >= 0 {
+		semn = 1
+	} else {
+		semn = -1
+	}
+	// Verifica daca calea de la rege la tura e goala
+	// FIXME: merge doar spre dreapta
+	for i := 1; i < semn*n; i++ {
+		if Board[x][y+semn*i].Tip != 0 {
+			return false
+		}
+	}
+	// Verifica daca regele nu va ajunge in sah
+	for i := 0; i < semn*3; i++ {
+		if Board[x][y].Culoare == 'W' {
+			if Board[x][y+semn*i].eControlatDeCuloare('B') {
+				return false
+			}
+		} else if Board[x][y].Culoare == 'B' {
+			if Board[x][y+semn*i].eControlatDeCuloare('W') {
+				return false
+			}
+		}
+	}
+	return true
+}
 
+// eControlatDeCuloare verifica daca echipa culoare controleaza patratul dat
+func (p *Piesa) eControlatDeCuloare(culoare rune) bool {
+	if culoare == 'W' {
+		return p.Control == 1 || p.Control == 3
+	} else if culoare == 'B' {
+		return p.Control == 2 || p.Control == 3
+	}
+	return false
 }

@@ -44,7 +44,7 @@ func (g *game) Update(_ *ebiten.Image) error {
 		for i := 0; i < 8; i++ {
 			fmt.Print(i+1, "     ")
 			for j := 0; j < 8; j++ {
-				fmt.Print(piese.Board[i][j].EnPassant, " ")
+				fmt.Print(piese.Board[i][j].Control, " ")
 			}
 			fmt.Print("\n")
 		}

@@ -114,6 +114,7 @@ func Clear(tabla *[8][8]Piesa, moved bool) {
 
 // setareControl seteaza controlul acelui patrat
 func setareControl(patrat *Piesa, culoare rune) {
+	// TODO: functia poate fi scurtata
 	if culoare == 'W' {
 		if patrat.Control == 2 {
 			patrat.Control = 3
@@ -145,8 +146,15 @@ func verifPatrateAtacate(tabla *[8][8]Piesa) {
 
 // verifIesireSah verifica daca exista miscare care scoate regele din sah
 func verifIesireSah(tabla *[8][8]Piesa, x, y, m, n int) {
+
+	if !verifSah(tabla, x, y, m, n) {
+		tabla[m][n].Atacat = true
+	}
+}
+
+func verifSah(tabla *[8][8]Piesa, x, y, m, n int) bool {
 	// Muta piesa pe patratul (m, n) (temporar)
-	piesa, culoare := tabla[m][n].Tip, tabla[m][n].Culoare
+	piesa, culoare, ok := tabla[m][n].Tip, tabla[m][n].Culoare, false
 
 	tabla[m][n].Tip = tabla[x][y].Tip
 	tabla[m][n].Culoare = tabla[x][y].Culoare
@@ -157,14 +165,17 @@ func verifIesireSah(tabla *[8][8]Piesa, x, y, m, n int) {
 	verifPatrateAtacate(tabla)
 
 	// Daca regele nu se mai afla in sah, notam mutarea efectuata drept posibila
-	ctrlRegeNegru := tabla[RegeNegru.X][RegeNegru.Y].Control
-	ctrlRegeAlb := tabla[RegeAlb.X][RegeAlb.Y].Control
+	ctrlRegeNegru := tabla[RegeNegru.X][RegeNegru.Y]
+	ctrlRegeAlb := tabla[RegeAlb.X][RegeAlb.Y]
 
-	if (ctrlRegeNegru == 2 || ctrlRegeNegru == 0) && SahNegru {
-		tabla[m][n].Atacat = true
-	}
-	if (ctrlRegeAlb == 1 || ctrlRegeAlb == 0) && SahAlb {
-		tabla[m][n].Atacat = true
+	if tabla[m][n].Culoare == 'B' {
+		if ctrlRegeNegru.eControlatDeCuloare('W') {
+			ok = true
+		}
+	} else {
+		if ctrlRegeAlb.eControlatDeCuloare('B') {
+			ok = true
+		}
 	}
 
 	// Punem piesa inapoi unde era
@@ -175,4 +186,5 @@ func verifIesireSah(tabla *[8][8]Piesa, x, y, m, n int) {
 
 	// Resetam matricea care arata controlul fiecarui patrat la starea originala
 	verifPatrateAtacate(tabla)
+	return ok
 }

@@ -4,10 +4,18 @@ package piese
 func (p *Piesa) miscareRege(tabla *[8][8]Piesa, x, y int, mutare bool) {
 	var dx = []int{x - 1, x - 1, x - 1, x, x + 1, x + 1, x + 1, x}
 	var dy = []int{y - 1, y, y + 1, y + 1, y + 1, y, y - 1, y - 1}
-	
-	//verifRocada(x, y - 4)
-	//verifRocada(x, y + 3)
-	
+
+	// Verific daca poate face rocada
+	if mutare == true && !tabla[x][y].Mutat {
+		if verifRocada(x, y, -4) {
+			tabla[x][y-2].Atacat = true
+			// FIXME
+		}
+		if verifRocada(x, y, +3) {
+			tabla[x][y+2].Atacat = true
+			// FIXME
+		}
+	}
 	for i := 0; i < 8; i++ {
 		m, n := dx[i], dy[i]
 		if inBound(m, n) {
@@ -145,9 +153,10 @@ func (p *Piesa) miscareNebun(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 			m, n := x+j*dx[i], y+j*dy[i]
 
 			if inBound(m, n) {
-				// Daca regele se afla in sah, verificam daca aceasta mutare il scaote din sah
-				if isSah {
-					verifIesireSah(tabla, x, y, m, n)
+				if mutare && !isSah {
+					if j == 1 && verifSah(tabla, x, y, m, n) {
+						break
+					}
 				}
 
 				// Daca vede o piesa de aceeasi culoare, se termina cautarea pe acea diagonala
@@ -201,7 +210,9 @@ func (p *Piesa) miscareCal(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 					if isSah {
 						verifIesireSah(tabla, x, y, m, n)
 					} else {
-						tabla[m][n].Atacat = true
+						if !verifSah(tabla, x, y, m, n) {
+							tabla[m][n].Atacat = true
+						}
 					}
 				} else {
 					setareControl(&tabla[m][n], tabla[x][y].Culoare)
@@ -223,6 +234,12 @@ func (p *Piesa) miscareTura(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 			m, n := x+j*dx[i], y+j*dy[i]
 
 			if inBound(m, n) {
+				if mutare && !isSah {
+					if j == 1 && verifSah(tabla, x, y, m, n) {
+						break
+					}
+				}
+
 				// Daca vede o piesa de aceeasi culoare, se termina cautarea pe acea linie/coloana
 				if tabla[x][y].Culoare == tabla[m][n].Culoare {
 					if !mutare {
@@ -246,7 +263,7 @@ func (p *Piesa) miscareTura(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 						if tabla[m][n].Tip == 'K' {
 							m2, n2 := x+(j+1)*dx[i], y+(j+1)*dy[i]
 							if inBound(m2, n2) {
-								tabla[m2][n2].Atacat = true
+								setareControl(&tabla[m2][n2], tabla[x][y].Culoare)
 							}
 						}
 						break
