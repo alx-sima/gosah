@@ -124,7 +124,7 @@ func (g *game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeigh
 
 func main() {
 	// Initializeaza matricea, jocul si tura
-	piese.InitializareMatriceClasic()
+	piese.InitializareMatriceRandomOglindit()
 	g := &game{}
 	piese.Turn = 'W'
 

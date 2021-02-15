@@ -92,6 +92,9 @@ func Mutare() {
 				Board[x][y].Tip = 'Q'
 			}
 		}
+		// Stergere pozitia initial selectat
+		Board[Selected.X][Selected.Y] = Empty()
+		Selected = PozitiePiesa{}
 
 		// Reseteaza tabla de sah si de pozitii atacate
 		SahAlb, SahNegru = false, false
@@ -105,10 +108,6 @@ func Mutare() {
 				Board[x][y].EnPassant = true
 			}
 		}
-
-		// Stergere pozitia initial selectat
-		Board[Selected.X][Selected.Y] = Empty()
-		Selected = PozitiePiesa{}
 
 		// Ia pozitia regelui
 		if Board[x][y].Tip == 'K' {
