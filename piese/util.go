@@ -9,9 +9,9 @@ import (
 )
 
 const (
-	Width  = 1920       // Lungimea ecranului
-	Height = 1080       // Latimea ecranului
-	L      = Height / 8 // Latura unui patrat
+	Width  = 1920       // Width retine lungimea ecranului
+	Height = 1080       // Height retine inaltimea ecranului
+	L      = Height / 8 // L retine latura unui patrat
 )
 
 var (
@@ -24,7 +24,7 @@ var (
 	Turn     rune // Turn retine 'W' daca e randul albului, sau 'B' daca e randul negrului
 )
 
-// Returneaza patratul in care se afla mouse-ul
+// GetSquare returneaza patratul in care se afla mouse-ul
 func GetSquare() (int, int) {
 	j, i := ebiten.CursorPosition()
 	i, j = i/L, j/L
@@ -34,6 +34,8 @@ func GetSquare() (int, int) {
 	}
 	return i, j
 }
+
+// Cronometru ar trebui sa numere 10 minute pt fiecare jucator
 func Cronometru() {
 	// TODO: adaugat cronometru
 	for sec := 10; sec > 0; sec-- {
@@ -43,6 +45,7 @@ func Cronometru() {
 	fmt.Println("Ai ramas fara timp cioara")
 }
 
+// AfisarePatrateAtacate genereaza mutarile posibile pentru piesa din (x, y) si o memoreaza in Selected
 func AfisarePatrateAtacate(x, y int) {
 	if Board[x][y].Culoare == Turn {
 		Board[x][y].Move(&Board, x, y, true, SahNegru || SahAlb)
@@ -59,19 +62,35 @@ func Mutare() {
 		Board[x][y] = *Selected.Ref
 		Board[x][y].Mutat = true
 
-		// Stergere pozitia initial selectat
-		Board[Selected.X][Selected.Y] = Empty()
-		Selected = PozitiePiesa{}
+		// Daca piesa captureaza prin en passant, elimina piesa capturata de pe tabla
+		if Board[x-1][y].EnPassant && Selected.X - x == -1 && (Selected.Y - y == 1 || Selected.Y - y == -1) {
+			Board[x-1][y] = Empty()
+		}
+		if Board[x+1][y].EnPassant && Selected.X - x == 1 && (Selected.Y - y == 1 || Selected.Y - y == -1) {
+			Board[x+1][y] = Empty()
+		}
 
-		// Transforma pionul in regina cand ajunge la capat
+		// Reseteaza tabla de sah si de pozitii atacate
+		SahAlb, SahNegru = false, false
+		Clear(&Board, true)
+
 		if Board[x][y].Tip == 'P' {
+			// Transforma pionul in regina cand ajunge la capat
 			if Board[x][y].Culoare == 'W' && x == 0 {
 				Board[x][y].Tip = 'Q'
 			}
 			if Board[x][y].Culoare == 'B' && x == 7 {
 				Board[x][y].Tip = 'Q'
 			}
+			// Daca pionul s-a mutat 2 patratele, retine ca e apt pt. en passant
+			if Selected.X-x == 2 || Selected.X-x == -2 {
+				Board[x][y].EnPassant = true
+			}
 		}
+
+		// Stergere pozitia initial selectat
+		Board[Selected.X][Selected.Y] = Empty()
+		Selected = PozitiePiesa{}
 
 		// Ia pozitia regelui
 		if Board[x][y].Tip == 'K' {
@@ -82,10 +101,6 @@ func Mutare() {
 				RegeNegru = PozitiePiesa{Ref: &Board[x][y], X: x, Y: y}
 			}
 		}
-
-		// Reseteaza tabla de sah si de pozitii atacate
-		SahAlb, SahNegru = false, false
-		Clear(&Board)
 
 		// Schimba tura de joc
 		if Turn == 'W' {
@@ -106,8 +121,8 @@ func Mutare() {
 	}
 }
 
-// InitializareMatrice genereaza piesele aleatoare pt. tabla de joc
-func InitializareMatrice() {
+// InitializareMatriceRandomOglindit genereaza piesele aleatoare pt. tabla de joc
+func InitializareMatriceRandomOglindit() {
 	// Initializeaza regii
 	Board[0][4] = NewPiesa('K', 'B')
 	RegeNegru = PozitiePiesa{Ref: &Board[0][4], Y: 4}
@@ -154,4 +169,21 @@ func InitializareMatrice() {
 
 	// FIXME: Cronometru
 	// go cronometru()
+}
+
+// InitializareMatriceClasic initializeaza tabla unui joc clasic de sah
+func InitializareMatriceClasic() {
+	// Initializare
+	piese := "RNBQKBNR"
+	for i := 0; i < 8; i++ {
+		Board[0][i] = NewPiesa(rune(piese[i]), 'B') 
+		Board[7][i] = NewPiesa(rune(piese[i]), 'W')
+		Board[1][i] = NewPiesa('P', 'B')
+		Board[6][i] = NewPiesa('P', 'W')
+	}
+}
+
+// TODO: verifRocada 
+func verifRocada() bool {
+
 }

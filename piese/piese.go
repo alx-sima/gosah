@@ -9,11 +9,12 @@ import (
 
 // Piesa tine informatii despre un patrat de pe tabla
 type Piesa struct {
-	Atacat  bool // Atacat retine daca in acel patrat poate ajunge piesa selectata (util.Selected)
-	Mutat   bool // Mutat retine daca piesa a fost mutata pana acum
-	Tip     rune // Tip retine initiala piesei (in engleza)
-	Culoare rune // Culoare: W inseamna piesa alba, B inseamna piesa neagra
-	Control int  // Control: 0 inseamna ca nu e controlat de nimeni acel patrat; 1 inseamna ca e controlat de alb, 2 inseamna ca e controlat de negru, 3 inseamna ca e controlat de ambele
+	Atacat    bool // Atacat retine daca in acel patrat poate ajunge piesa selectata (util.Selected)
+	Mutat     bool // Mutat retine daca piesa a fost mutata pana acum
+	EnPassant bool // EnPassant retine daca ultima miscare a pionului a fost de 2 patrate, astfel incat sa fie posibila capturarea prin en passant
+	Tip       rune // Tip retine initiala piesei (in engleza)
+	Culoare   rune // Culoare: W inseamna piesa alba, B inseamna piesa neagra
+	Control   int  // Control: 0 inseamna ca nu e controlat de nimeni acel patrat; 1 inseamna ca e controlat de alb, 2 inseamna ca e controlat de negru, 3 inseamna ca e controlat de ambele
 }
 
 // PozitiePiesa tine piesa si pozitia ei
@@ -31,13 +32,13 @@ var (
 
 // NewPiesa returneaza o noua piesa, initializata
 func NewPiesa(tip, culoare rune) Piesa {
-	e := Piesa{false, false, tip, culoare, 0}
+	e := Piesa{false, false, false, tip, culoare, 0}
 	return e
 }
 
 // Empty eturneaza o noua piesa "goala"
 func Empty() Piesa {
-	e := Piesa{false, false, 0, 0, 0}
+	e := Piesa{false, false, false, 0, 0, 0}
 	return e
 }
 
@@ -99,10 +100,13 @@ func inBound(a, b int) bool {
 }
 
 // Clear curata tabla de miscari posibile + verifica pentru pozitiile actuale controlul asupra fieccarui patrat
-func Clear(tabla *[8][8]Piesa) {
+func Clear(tabla *[8][8]Piesa, moved bool) {
 	for i := 0; i < 8; i++ {
 		for j := 0; j < 8; j++ {
 			tabla[i][j].Atacat = false
+			if moved {
+				tabla[i][j].EnPassant = false
+			}
 		}
 	}
 	verifPatrateAtacate(tabla)

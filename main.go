@@ -27,7 +27,7 @@ func (g *game) Update(_ *ebiten.Image) error {
 		}
 		// Daca ultimul clic a fost pe o piesa, se reseteaza tabla inainte de a inregistra clicul curent
 		if piese.Clicked {
-			piese.Clear(&piese.Board)
+			piese.Clear(&piese.Board, false)
 		}
 		// Daca clicul a fost pe o piesa afiseaza patratele pe care se poate misca
 		if piese.Board[x][y].Tip != 0 {
@@ -44,11 +44,11 @@ func (g *game) Update(_ *ebiten.Image) error {
 		for i := 0; i < 8; i++ {
 			fmt.Print(i+1, "     ")
 			for j := 0; j < 8; j++ {
-				fmt.Print(piese.Board[i][j].Control, " ")
+				fmt.Print(piese.Board[i][j].EnPassant, " ")
 			}
 			fmt.Print("\n")
 		}
-		fmt.Println("================")
+		fmt.Println("=====================================")
 	}
 	//fmt.Println(ebiten.CurrentFPS())
 	return nil
@@ -124,7 +124,7 @@ func (g *game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeigh
 
 func main() {
 	// Initializeaza matricea, jocul si tura
-	piese.InitializareMatrice()
+	piese.InitializareMatriceClasic()
 	g := &game{}
 	piese.Turn = 'W'
 

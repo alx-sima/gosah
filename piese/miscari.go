@@ -4,6 +4,10 @@ package piese
 func (p *Piesa) miscareRege(tabla *[8][8]Piesa, x, y int, mutare bool) {
 	var dx = []int{x - 1, x - 1, x - 1, x, x + 1, x + 1, x + 1, x}
 	var dy = []int{y - 1, y, y + 1, y + 1, y + 1, y, y - 1, y - 1}
+	
+	//verifRocada(x, y - 4)
+	//verifRocada(x, y + 3)
+	
 	for i := 0; i < 8; i++ {
 		m, n := dx[i], dy[i]
 		if inBound(m, n) {
@@ -39,7 +43,7 @@ func (p *Piesa) miscarePion(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 			m, n := x-1, dy[i]
 			if inBound(m, n) {
 				// Daca se afla o piesa inamica in stanga- sau dreapta-susul pionului, verifica acel patrat
-				if tabla[m][n].Tip != 0 && i != 1 {
+				if (tabla[m][n].Tip != 0 || (tabla[m+1][n].Tip != 0 && tabla[m+1][n].EnPassant)) && i != 1 {
 					if tabla[x][y].Culoare != tabla[m][n].Culoare {
 						if mutare {
 							// Daca regele se afla in sah, verificam daca aceasta mutare il scaote din sah
@@ -72,7 +76,7 @@ func (p *Piesa) miscarePion(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 			m, n := x+1, dy[i]
 			if inBound(m, n) {
 				// Daca se afla o piesa inamica in stanga- sau dreapta-josul pionului, verifica acel patrat
-				if tabla[m][n].Tip != 0 && i != 1 {
+				if (tabla[m][n].Tip != 0 || (tabla[m-1][n].Tip != 0 && tabla[m-1][n].EnPassant)) && i != 1 {
 					if tabla[x][y].Culoare != tabla[m][n].Culoare {
 						if mutare {
 							// Daca regele se afla in sah, verificam daca aceasta mutare il scaote din sah
@@ -167,6 +171,12 @@ func (p *Piesa) miscareNebun(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 
 					// Daca vede o piesa de alta culoare, afiseaza ca poate ataca acel patrat, dupa care opreste cautarea pe acea diagonala
 					if tabla[x][y].Culoare != tabla[m][n].Culoare && tabla[m][n].Culoare != 0 {
+						if tabla[m][n].Tip == 'K' {
+							m2, n2 := x+(j+1)*dx[i], y+(j+1)*dy[i]
+							if inBound(m2, n2) {
+								setareControl(&tabla[m2][n2], tabla[x][y].Culoare)
+							}
+						}
 						break
 					}
 				}
@@ -233,6 +243,12 @@ func (p *Piesa) miscareTura(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 
 					// Daca vede o piesa de alta culoare, afiseaza ca poate ataca acel patrat, dupa care opreste cautarea pe acea linie/coloana
 					if tabla[x][y].Culoare != tabla[m][n].Culoare && tabla[m][n].Culoare != 0 {
+						if tabla[m][n].Tip == 'K' {
+							m2, n2 := x+(j+1)*dx[i], y+(j+1)*dy[i]
+							if inBound(m2, n2) {
+								tabla[m2][n2].Atacat = true
+							}
+						}
 						break
 					}
 				}
