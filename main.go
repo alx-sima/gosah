@@ -19,7 +19,7 @@ func (g *game) Update(_ *ebiten.Image) error {
 	// Write your game's logical update.
 	if piese.Pat {
 		piese.Turn = 'X'
-		fmt.Println("Ai egalat, cioaraaaaaaaa")
+		fmt.Println("Ai egalat")
 	} else {
 		if inpututil.IsMouseButtonJustReleased(ebiten.MouseButtonLeft) {
 			x, y := piese.GetSquare()
@@ -45,18 +45,17 @@ func (g *game) Update(_ *ebiten.Image) error {
 			}
 
 			// Afisare matrice (doar pt testing)
-			/*for i := 0; i < 8; i++ {
+			for i := 0; i < 8; i++ {
 				fmt.Print(i+1, "     ")
 				for j := 0; j < 8; j++ {
-					fmt.Print(piese.Board[i][j].Mutat, " ")
+					fmt.Print(piese.Board[i][j].Control, " ")
 				}
 				fmt.Print("\n")
 			}
-			fmt.Println("=====================================")*/
+			fmt.Println("=====================================")
 		}
 		//fmt.Println(ebiten.CurrentFPS())
 
-		piese.VerifPat()
 	}
 	return nil
 }
@@ -66,7 +65,7 @@ func (g *game) Update(_ *ebiten.Image) error {
 func (g *game) Draw(screen *ebiten.Image) {
 	// Write your game's rendering.
 
-	// FIXME: se deseneaza de doua ori una peste alta
+	// FIXME: tremura ecranul cand misti
 	// Deseneaza doar daca a fost efectuata o schimbare
 	if piese.Changed == true {
 		piese.Changed = false
@@ -131,7 +130,7 @@ func (g *game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeigh
 
 func main() {
 	// Initializeaza matricea, jocul si tura
-	piese.Init("sandbox")
+	piese.Init("random")
 	g := &game{}
 
 	// Nu mai da clear la fiecare frame

@@ -35,11 +35,13 @@ func (p *Piesa) miscareRege(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 					if isSah {
 						if !verifSah(tabla, x, y, m, n) {
 							Mat = false
+							existaMutare = true
 						}
-					} else {
-						setareControl(&tabla[m][n], tabla[x][y].Culoare)
 					}
 				}
+			}
+			if !mutare && !isSah {
+				setareControl(&tabla[m][n], tabla[x][y].Culoare)
 			}
 		}
 	}
@@ -70,12 +72,14 @@ func (p *Piesa) miscarePion(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 							if isSah {
 								if !verifSah(tabla, x, y, m, n) {
 									Mat = false
+									existaMutare = true
 								}
-							} else {
-								setareControl(&tabla[m][n], tabla[x][y].Culoare)
 							}
 						}
 					}
+				}
+				if !mutare && !isSah && i != 1 {
+					setareControl(&tabla[m][n], tabla[x][y].Culoare)
 				}
 				// Verifica daca poti muta pionul un patrat in fata
 				if tabla[m][n].Tip == 0 && i == 1 {
@@ -92,6 +96,7 @@ func (p *Piesa) miscarePion(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 						if isSah {
 							if !verifSah(tabla, x, y, m, n) {
 								Mat = false
+								existaMutare = true
 							}
 						}
 					}
@@ -119,12 +124,14 @@ func (p *Piesa) miscarePion(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 							if isSah {
 								if !verifSah(tabla, x, y, m, n) {
 									Mat = false
+									existaMutare = true
 								}
-							} else {
-								setareControl(&tabla[m][n], tabla[x][y].Culoare)
-							}
+							} 
 						}
 					}
+				}
+				if !mutare && !isSah && i != 1 {
+					setareControl(&tabla[m][n], tabla[x][y].Culoare)
 				}
 				// Verifica daca poti muta pionul un patrat in fata
 				if tabla[m][n].Tip == 0 && i == 1 {
@@ -141,6 +148,7 @@ func (p *Piesa) miscarePion(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 						if isSah {
 							if !verifSah(tabla, x, y, m, n) {
 								Mat = false
+								existaMutare = true
 							}
 						}
 					}
@@ -153,42 +161,48 @@ func (p *Piesa) miscarePion(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 	// Daca a fost mutat deja, nu mai poate parcurge 2 patrate
 	if tabla[x][y].Mutat == false {
 		if tabla[x][y].Culoare == 'W' {
-			// Verifica daca urmatoarele doua patrate sunt libere
-			if tabla[x-1][y].Tip == 0 && tabla[x-2][y].Tip == 0 {
-				// Daca regele se afla in sah, verificam daca aceasta mutare il scaote din sah
-				if mutare {
-					if isSah {
-						verifIesireSah(tabla, x, y, x-2, y)
-					} else {
-						if !verifSah(tabla, x, y, x-2, y) {
-							tabla[x-2][y].Atacat = true
+			if inBound(x-2, y) {
+				// Verifica daca urmatoarele doua patrate sunt libere
+				if tabla[x-1][y].Tip == 0 && tabla[x-2][y].Tip == 0 {
+					// Daca regele se afla in sah, verificam daca aceasta mutare il scaote din sah
+					if mutare {
+						if isSah {
+							verifIesireSah(tabla, x, y, x-2, y)
+						} else {
+							if !verifSah(tabla, x, y, x-2, y) {
+								tabla[x-2][y].Atacat = true
+							}
 						}
-					}
-				} else {
-					if isSah {
-						if !verifSah(tabla, x, y, x-2, y) {
-							Mat = false
+					} else {
+						if isSah {
+							if !verifSah(tabla, x, y, x-2, y) {
+								Mat = false
+								existaMutare = true
+							}
 						}
 					}
 				}
 			}
 		}
 		if tabla[x][y].Culoare == 'B' {
-			// Verifica daca urmatoarele doua patrate sunt libere
-			if tabla[x+1][y].Tip == 0 && tabla[x+2][y].Tip == 0 {
-				// Daca regele se afla in sah, verificam daca aceasta mutare il scaote din sah
-				if mutare {
-					if isSah {
-						verifIesireSah(tabla, x, y, x+2, y)
-					} else {
-						if !verifSah(tabla, x, y, x+2, y) {
-							tabla[x+2][y].Atacat = true
+			if inBound(x+2, y) {
+				// Verifica daca urmatoarele doua patrate sunt libere
+				if tabla[x+1][y].Tip == 0 && tabla[x+2][y].Tip == 0 {
+					// Daca regele se afla in sah, verificam daca aceasta mutare il scaote din sah
+					if mutare {
+						if isSah {
+							verifIesireSah(tabla, x, y, x+2, y)
+						} else {
+							if !verifSah(tabla, x, y, x+2, y) {
+								tabla[x+2][y].Atacat = true
+							}
 						}
-					}
-				} else {
-					if isSah {
-						if !verifSah(tabla, x, y, x+2, y) {
-							Mat = false
+					} else {
+						if isSah {
+							if !verifSah(tabla, x, y, x+2, y) {
+								Mat = false
+								existaMutare = true
+							}
 						}
 					}
 				}
@@ -232,6 +246,7 @@ func (p *Piesa) miscareNebun(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 						if isSah {
 							if !verifSah(tabla, x, y, m, n) {
 								Mat = false
+								existaMutare = true
 							}
 						} else {
 							setareControl(&tabla[m][n], tabla[x][y].Culoare)
@@ -278,6 +293,7 @@ func (p *Piesa) miscareCal(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 					if isSah {
 						if !verifSah(tabla, x, y, m, n) {
 							Mat = false
+							existaMutare = true
 						}
 					} else {
 						setareControl(&tabla[m][n], tabla[x][y].Culoare)
@@ -324,6 +340,7 @@ func (p *Piesa) miscareTura(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 						if isSah {
 							if !verifSah(tabla, x, y, m, n) {
 								Mat = false
+								existaMutare = true
 							}
 						} else {
 							setareControl(&tabla[m][n], tabla[x][y].Culoare)

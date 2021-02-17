@@ -10,7 +10,7 @@ import (
 func Init(mod string) {
 	Turn = 'W'
 	// Cauta fisierul nivel.json
-	_, err := os.Stat("nivel.json")
+	_, err := os.Stat("nivelcox.json")
 	// Daca nu exista, initiem normal
 	if os.IsNotExist(err) {
 		switch mod {
@@ -18,13 +18,10 @@ func Init(mod string) {
 			initializareMatriceClasic()
 		case "random":
 			initializareMatriceRandomOglindit()
-		case "sandbox":
-			initializareMatriceSandbox()
 		}
-
 		// FIXME: Cronometru
 		// go cronometru()
-	// Daca nu exista erori, initializam nivelul din fisier
+		// Daca nu exista erori, initializam nivelul din fisier
 	} else if err == nil {
 		initializareFisier()
 	}
@@ -33,13 +30,8 @@ func Init(mod string) {
 // initializareMatriceRandomOglindit genereaza piesele aleatoare pt. tabla de joc
 func initializareMatriceRandomOglindit() {
 	// Initializeaza regii
-	Board[0][4] = NewPiesa('K', 'B')
-	RegeNegru = PozitiePiesa{Ref: &Board[0][4], Y: 4}
-	PieseNegre = append(PieseNegre, 'K')
-
-	Board[7][4] = NewPiesa('K', 'W')
-	RegeAlb = PozitiePiesa{Ref: &Board[7][4], X: 7, Y: 4}
-	PieseAlbe = append(PieseAlbe, 'K')
+	generarePiesa(0, 4, 'K', 'B')
+	generarePiesa(7, 4, 'K', 'W')
 
 	// Initializeaza seedul rand-ului
 	rand.Seed(time.Now().Unix())
@@ -52,29 +44,24 @@ func initializareMatriceRandomOglindit() {
 				switch r % 5 {
 				case 0:
 					// Pion
-					Board[i][j], Board[7-i][j] = NewPiesa('P', 'B'), NewPiesa('P', 'W')
-					PieseAlbe = append(PieseAlbe, 'P')
-					PieseNegre = append(PieseNegre, 'P')
+					generarePiesa(i, j, 'P', 'B')
+					generarePiesa(7-i, j, 'P', 'W')
 				case 1:
 					// Nebun
-					Board[i][j], Board[7-i][j] = NewPiesa('B', 'B'), NewPiesa('B', 'W')
-					PieseAlbe = append(PieseAlbe, 'B')
-					PieseNegre = append(PieseNegre, 'B')
+					generarePiesa(i, j, 'B', 'B')
+					generarePiesa(7-i, j, 'B', 'W')
 				case 2:
 					// Cal
-					Board[i][j], Board[7-i][j] = NewPiesa('N', 'B'), NewPiesa('N', 'W')
-					PieseAlbe = append(PieseAlbe, 'N')
-					PieseNegre = append(PieseNegre, 'N')
+					generarePiesa(i, j, 'N', 'B')
+					generarePiesa(7-i, j, 'N', 'W')
 				case 3:
 					// Tura
-					Board[i][j], Board[7-i][j] = NewPiesa('R', 'B'), NewPiesa('R', 'W')
-					PieseAlbe = append(PieseAlbe, 'R')
-					PieseNegre = append(PieseNegre, 'R')
+					generarePiesa(i, j, 'R', 'B')
+					generarePiesa(7-i, j, 'R', 'W')
 				case 4:
 					// Regina
-					Board[i][j], Board[7-i][j] = NewPiesa('Q', 'B'), NewPiesa('Q', 'W')
-					PieseAlbe = append(PieseAlbe, 'Q')
-					PieseNegre = append(PieseNegre, 'Q')
+					generarePiesa(i, j, 'Q', 'B')
+					generarePiesa(7-i, j, 'Q', 'W')
 				}
 			}
 		}
@@ -96,28 +83,3 @@ func initializareMatriceClasic() {
 	PieseAlbe = append(PieseAlbe, 'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P')
 	PieseNegre = append(PieseNegre, 'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P')
 }
-
-// FIXME: will be removed
-func initializareMatriceSandbox() {
-	Board[0][4] = NewPiesa('K', 'B')
-	RegeNegru = PozitiePiesa{Ref: &Board[0][4], Y: 4}
-	PieseNegre = append(PieseNegre, 'K')
-
-	Board[7][4] = NewPiesa('K', 'W')
-	RegeAlb = PozitiePiesa{Ref: &Board[7][4], X: 7, Y: 4}
-	PieseAlbe = append(PieseAlbe, 'K')
-
-	Board[7][5] = NewPiesa('N', 'W')
-	RegeAlb = PozitiePiesa{Ref: &Board[7][4], X: 7, Y: 4}
-	PieseAlbe = append(PieseAlbe, 'N')
-
-	/*Board[0][3] = NewPiesa('N', 'B')
-	RegeNegru = PozitiePiesa{Ref: &Board[0][4], Y: 4}
-	PieseNegre = append(PieseNegre, 'N')*/
-}
-
-// initializare nivele speciale din fisierul nivel.json
-func initializareFisier() {
-	
-}
-

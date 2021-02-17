@@ -36,10 +36,26 @@ func NewPiesa(tip, culoare rune) Piesa {
 	return e
 }
 
-// Empty eturneaza o noua piesa "goala"
+// Empty returneaza o noua piesa "goala"
 func Empty() Piesa {
 	e := Piesa{false, false, false, 0, 0, 0}
 	return e
+}
+
+// generarePiesa adauga pe tabla si in vectorii de piese o noua piesa la pozitia (i, j), de <tip> si <culoare>
+func generarePiesa(i, j int, tip, culoare rune) {
+	Board[i][j] = NewPiesa(tip, culoare)
+	if culoare == 'W' {
+		PieseAlbe = append(PieseAlbe, tip)
+		if tip == 'K' {
+			RegeAlb = PozitiePiesa{&Board[i][j], i, j}
+		}
+	} else {
+		PieseNegre = append(PieseNegre, tip)
+		if tip == 'K' {
+			RegeNegru = PozitiePiesa{&Board[i][j], i, j}
+		}
+	}
 }
 
 /// Metode

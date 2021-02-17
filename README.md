@@ -1,9 +1,14 @@
-# sah, doar ca epic (toate piesele sunt aleatorii)
-
-Proiect realizat de Baldovin Razvan, Sima Alexandru
-
+# Sah, doar ca epic (toate piesele sunt aleatorii)
+## Cum functioneaza:
+* ```$ go run .```
+* isi ia fisierele din folderul "imagini/" si sunt numite de ex "b_bishop_png_128px.png"
+* cauta nivel.json
+* daca nu exista, genereaza piesele la intamplare
+---
+## TODO: 
+- [x] implementat sah
+- [x] implementat pat
+---
 linkuri utile: https://ro.wikipedia.org/wiki/Regulile_jocului_de_%C8%99ah
 
-TODO: implement sah, pat
-
-UPDATE (pt versiunea 2.0): nivele puzzle in care trebuie sa dai sah in mai putin de n mutari
+Proiect realizat de Baldovin Razvan, Sima Alexandru
