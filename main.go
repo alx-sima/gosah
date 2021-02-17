@@ -131,7 +131,7 @@ func (g *game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeigh
 
 func main() {
 	// Initializeaza matricea, jocul si tura
-	piese.Init("random")
+	piese.Init()
 	g := &game{}
 
 	// Nu mai da clear la fiecare frame

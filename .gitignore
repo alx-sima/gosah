@@ -8,5 +8,6 @@
 /httpRequests/
 
 # User-added
+/idea/
 *.exe
 __debug_bin

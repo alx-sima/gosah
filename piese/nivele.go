@@ -2,6 +2,7 @@ package piese
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 
 	"strings"
@@ -13,10 +14,13 @@ type data struct {
 	Tabla         []string //Tabla retine randurile tablei
 }
 
-// initializareFisier initializeaza nivele speciale din fisierul nivel.json
-func initializareFisier() {
-	// Deschide fisierul
-	f, _ := ioutil.ReadFile("nivel.json")
+// initializareFisier initializeaza nivele speciale din fisierul clasic.json
+func initializareFisier(fileName string) bool {
+	// Deschide fisierul si verifica daca e valid
+	f, _ := ioutil.ReadFile("nivele/" + fileName + ".json")
+	if !json.Valid(f) {
+		return false
+	}
 
 	// Desface fisierul
 	var niv data
@@ -31,11 +35,24 @@ func initializareFisier() {
 			chr := rune(niv.Tabla[i][j])
 			// Verifica daca e litera mica (inseamna ca e piesa neagra)
 			if strings.ToLower(string(chr)) == string(chr) {
-				generarePiesa(i, j, rune(chr-'a'+'A'), 'B')
-			// Altfel piesa alba	
+				generarePiesa(i, j, chr-'a'+'A', 'B')
+				// Altfel piesa alba
 			} else {
-				generarePiesa(i, j, rune(chr), 'W')
+				generarePiesa(i, j, chr, 'W')
 			}
 		}
+	}
+	// Initializat cu succes
+	return true
+}
+
+// listare cauta toate fisierele din folderul /nivele/ si le afiseaza fara extensia ".json"
+func listare() {
+	fmt.Println("?")
+	fmt.Println("random")
+	files, _ := ioutil.ReadDir("./nivele")
+	for _, f := range files {
+		numeFisier := strings.ReplaceAll(f.Name(), ".json", "")
+		fmt.Println(numeFisier)
 	}
 }

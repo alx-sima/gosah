@@ -1,30 +1,38 @@
 package piese
 
 import (
+	"fmt"
 	"math/rand"
-	"os"
 	"time"
 )
 
 // Init implementeaza gamemodeul
-func Init(mod string) {
+func Init() {
+	// Albul incepe
 	Turn = 'W'
-	// Cauta fisierul nivel.json
-	_, err := os.Stat("nivel.json")
-	// Daca nu exista, initiem normal
-	if os.IsNotExist(err) {
-		switch mod {
-		case "clasic":
-			initializareMatriceClasic()
+
+	// Repeta pana cand se incarca un nivel valid
+	fmt.Println("Ce nivel vei juca? (default: random, ?: listare variante)")
+	for nivel, invalid := "random", true; invalid; {
+
+		fmt.Scanf("%s", &nivel)
+		switch nivel {
+		case "?":
+			listare()
 		case "random":
 			initializareMatriceRandomOglindit()
+			invalid = false
+		// Daca nu gaseste in modurile prestabilite, verifica in folderul nivele	
+		default:
+			if initializareFisier(nivel) {
+				invalid = false
+			} else {
+				fmt.Println("format gresit")
+			}
 		}
-		// FIXME: Cronometru
-		// go cronometru()
-		// Daca nu exista erori, initializam nivelul din fisier
-	} else if err == nil {
-		initializareFisier()
 	}
+	// FIXME: Cronometru
+	// go cronometru()
 }
 
 // initializareMatriceRandomOglindit genereaza piesele aleatoare pt. tabla de joc
@@ -66,20 +74,4 @@ func initializareMatriceRandomOglindit() {
 			}
 		}
 	}
-}
-
-// InitializareMatriceClasic initilizeaza tabla unui joc clasic de sah
-func initializareMatriceClasic() {
-	// Initializare
-	piese := "RNBQKBNR"
-	for i := 0; i < 8; i++ {
-		Board[0][i] = NewPiesa(rune(piese[i]), 'B')
-		Board[7][i] = NewPiesa(rune(piese[i]), 'W')
-		Board[1][i] = NewPiesa('P', 'B')
-		Board[6][i] = NewPiesa('P', 'W')
-	}
-	RegeNegru = PozitiePiesa{Ref: &Board[0][4], Y: 4}
-	RegeAlb = PozitiePiesa{Ref: &Board[7][4], X: 7, Y: 4}
-	PieseAlbe = append(PieseAlbe, 'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P')
-	PieseNegre = append(PieseNegre, 'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P')
 }
