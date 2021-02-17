@@ -10,7 +10,7 @@ import (
 func Init(mod string) {
 	Turn = 'W'
 	// Cauta fisierul nivel.json
-	_, err := os.Stat("nivelcox.json")
+	_, err := os.Stat("nivel.json")
 	// Daca nu exista, initiem normal
 	if os.IsNotExist(err) {
 		switch mod {

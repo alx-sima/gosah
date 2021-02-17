@@ -117,6 +117,7 @@ func (g *game) Draw(screen *ebiten.Image) {
 			}
 			// Muta <opts> in stanga si mai jos
 			opts.GeoM.Translate(-9/8*piese.Height, piese.Height/8)
+			opts.GeoM.Translate(0, 0)
 		}
 	}
 }

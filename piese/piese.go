@@ -32,8 +32,8 @@ var (
 
 // NewPiesa returneaza o noua piesa, initializata
 func NewPiesa(tip, culoare rune) Piesa {
-	e := Piesa{false, false, false, tip, culoare, 0}
-	return e
+		e := Piesa{false, false, false, tip, culoare, 0}
+		return e
 }
 
 // Empty returneaza o noua piesa "goala"
@@ -44,6 +44,18 @@ func Empty() Piesa {
 
 // generarePiesa adauga pe tabla si in vectorii de piese o noua piesa la pozitia (i, j), de <tip> si <culoare>
 func generarePiesa(i, j int, tip, culoare rune) {
+	// Functie anonima care verifica daca piesa care trebuie mentionata este valida
+	tipCorect := func(x rune) bool{
+		for _, i := range "RNBQKP" {
+			if x == i {
+				return true
+			}
+		}
+		return false
+	}
+	if !tipCorect(tip) {
+		return
+	}
 	Board[i][j] = NewPiesa(tip, culoare)
 	if culoare == 'W' {
 		PieseAlbe = append(PieseAlbe, tip)

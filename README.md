@@ -11,4 +11,9 @@
 ---
 linkuri utile: https://ro.wikipedia.org/wiki/Regulile_jocului_de_%C8%99ah
 
-Proiect realizat de Baldovin Razvan, Sima Alexandru
+Proiect realizat de: 
+* Baldovin Razvan
+* Sima Alexandru
+
+Contributori:
+* Ciortan Tudor
