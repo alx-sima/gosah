@@ -39,7 +39,6 @@ func (p *Piesa) miscareRege(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 					} else {
 						setareControl(&tabla[m][n], tabla[x][y].Culoare)
 					}
-
 				}
 			}
 		}
@@ -188,7 +187,7 @@ func (p *Piesa) miscarePion(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 					}
 				} else {
 					if isSah {
-						if !verifSah(tabla, x, y, x-2, y) {
+						if !verifSah(tabla, x, y, x+2, y) {
 							Mat = false
 						}
 					}

@@ -152,6 +152,7 @@ func verifIesireSah(tabla *[8][8]Piesa, x, y, m, n int) {
 	}
 }
 
+// verifSah verifica daca mutarea piesei alese din patratul x, y in patratul m, n scoate regele din sah. Returneaza true daca ramane in sah, false daca iese din sah
 func verifSah(tabla *[8][8]Piesa, x, y, m, n int) bool {
 	// Muta piesa pe patratul (m, n) (temporar)
 	piesa, culoare, ok := tabla[m][n].Tip, tabla[m][n].Culoare, false
@@ -164,17 +165,29 @@ func verifSah(tabla *[8][8]Piesa, x, y, m, n int) bool {
 	// Resetam matricea care arata controlul fiecarui patrat
 	verifPatrateAtacate(tabla)
 
-	// Daca regele nu se mai afla in sah, notam mutarea efectuata drept posibila
-	ctrlRegeNegru := tabla[RegeNegru.X][RegeNegru.Y]
-	ctrlRegeAlb := tabla[RegeAlb.X][RegeAlb.Y]
-
-	if tabla[m][n].Culoare == 'B' {
-		if ctrlRegeNegru.eControlatDeCuloare('W') {
-			ok = true
+	if tabla[m][n].Tip == 'K' {
+		if tabla[m][n].Culoare == 'B' {
+			if tabla[m][n].eControlatDeCuloare('W') {
+				ok = true
+			}
+		} else {
+			if tabla[m][n].eControlatDeCuloare('B') {
+				ok = true
+			}
 		}
 	} else {
-		if ctrlRegeAlb.eControlatDeCuloare('B') {
-			ok = true
+		// Daca regele nu se mai afla in sah, notam mutarea efectuata drept posibila
+		ctrlRegeNegru := tabla[RegeNegru.X][RegeNegru.Y]
+		ctrlRegeAlb := tabla[RegeAlb.X][RegeAlb.Y]
+
+		if tabla[m][n].Culoare == 'B' {
+			if ctrlRegeNegru.eControlatDeCuloare('W') {
+				ok = true
+			}
+		} else {
+			if ctrlRegeAlb.eControlatDeCuloare('B') {
+				ok = true
+			}
 		}
 	}
 

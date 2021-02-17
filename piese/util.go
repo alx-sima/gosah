@@ -25,7 +25,7 @@ func Cronometru() {
 		fmt.Println(sec)
 		time.Sleep(1 * time.Second)
 	}
-	fmt.Println("Ai ramas fara timp cioara")
+	fmt.Println("Ai ramas fara timp!")
 }
 
 // AfisarePatrateAtacate genereaza mutarile posibile pentru piesa din (x, y) si o memoreaza in Selected
@@ -40,9 +40,28 @@ func AfisarePatrateAtacate(x, y int) {
 func Mutare() {
 	if x, y := GetSquare(); Board[x][y].Atacat {
 
+		if Board[x][y].Tip != 0 {
+			if Turn == 'W' {
+				for i := 0; i < len(PieseNegre); i++ {
+					if Board[x][y].Tip == PieseNegre[i] {
+						PieseNegre = remove(PieseNegre, i)
+						break
+					}
+				}
+			} else {
+				for i := 0; i < len(PieseAlbe); i++ {
+					if Board[x][y].Tip == PieseAlbe[i] {
+						PieseAlbe = remove(PieseAlbe, i)
+						break
+					}
+				}
+			}
+		}
+
 		// Translateaza piesa din selected pe pozitia (x, y)
 		Board[x][y] = *Selected.Ref
 		Board[x][y].Mutat = true
+
 		// Verifica daca mutarea provoaca o rocada
 		if Board[x][y].Tip == 'K' {
 			// In dreapta
@@ -53,7 +72,7 @@ func Mutare() {
 				Board[x][y+1], Board[x][y-2] = Board[x][y-2], Board[x][y+1]
 			}
 		}
-		// IMPORTANT!  aceasta verificare pentru pion trebuie facuta inainte de clear
+		// IMPORTANT! aceasta verificare pentru pion trebuie facuta inainte de clear
 		// Daca piesa captureaza prin en passant, elimina piesa capturata de pe tabla
 		if Board[x][y].Tip == 'P' {
 			if inBound(x-1, y) {
@@ -133,6 +152,65 @@ func verifMat(culoare rune) {
 		}
 	}
 	if Mat {
-		fmt.Println("Ai pierdut, cioaraaaa")
+		fmt.Println("Ai pierdut")
 	}
+}
+
+// remove ia sliceul slice si returneaza un nou slice, fara elementul de la pozitia s
+func remove(slice []rune, s int) []rune {
+	return append(slice[:s], slice[s+1:]...)
+}
+
+func VerifPat() {
+	if len(PieseAlbe) <= 2 && len(PieseNegre) <= 2 {
+		Pat = true
+		if len(PieseAlbe) == len(PieseNegre) && len(PieseNegre) == 2 {
+			for i := 0; i < 2; i++ {
+				if PieseAlbe[i] != 'K' && PieseAlbe[i] != 'B' && PieseNegre[i] != 'K' && PieseNegre[i] != 'B' {
+					Pat = false
+					break;
+				}
+			}
+			if Pat == true {
+				culoare := 0 // culoare reprezinta culoarea patratului pe care se afla nebunul
+				for i := 0; i < 8; i++ {
+					for j := 0; j < 8; j++ {
+						if Board[i][j].Tip == 'B' {
+							if culoare != 0 {
+								if ((i+j)%2 == 0 && culoare != 'A') || ((i+j)%2 == 1 && culoare != 'N') {
+									Pat = false
+								}
+							} else {
+								if (i+j)%2 == 0 {
+									culoare = 'A'
+								} else {
+									culoare = 'N'
+								}
+							}
+						}
+					}
+				}
+			}
+		} else {
+			for i := 0; i < len(PieseAlbe) && Pat; i++ {
+				if PieseAlbe[i] != 'K' && PieseAlbe[i] != 'N' && PieseAlbe[i] != 'B' {
+					Pat = false
+				}
+			}
+			for i := 0; i < len(PieseNegre) && Pat; i++ {
+				if PieseNegre[i] != 'K' && PieseNegre[i] != 'N' && PieseNegre[i] != 'B' {
+					Pat = false
+				}
+			}
+		}
+	}
+}
+// eControlateCuloare verifica daca echipa culoare controleaza patratul dat
+func (p *Piesa) eControlatDeCuloare(culoare rune) bool {
+	if culoare == 'W' {
+		return p.Control == 1 || p.Control == 3
+	} else if culoare == 'B' {
+		return p.Control == 2 || p.Control == 3
+	}
+	return false
 }

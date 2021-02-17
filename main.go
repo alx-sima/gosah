@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"gosah/piese"
 	"image/color"
 	"log"
@@ -16,40 +17,47 @@ type game struct{}
 // Update is called every tick (1/60 [s] by default).
 func (g *game) Update(_ *ebiten.Image) error {
 	// Write your game's logical update.
-	if inpututil.IsMouseButtonJustReleased(ebiten.MouseButtonLeft) {
-		x, y := piese.GetSquare()
+	if piese.Pat {
+		piese.Turn = 'X'
+		fmt.Println("Ai egalat, cioaraaaaaaaa")
+	} else {
+		if inpututil.IsMouseButtonJustReleased(ebiten.MouseButtonLeft) {
+			x, y := piese.GetSquare()
 
-		// Daca apesi pe un patrat atacat apelezi functia de mutare
-		if piese.Board[x][y].Atacat == true {
-			piese.Mutare()
-			piese.Clicked = false
-		}
-		// Daca ultimul clic a fost pe o piesa, se reseteaza tabla inainte de a inregistra clicul curent
-		if piese.Clicked {
-			piese.Clear(&piese.Board, false)
-		}
-		// Daca clicul a fost pe o piesa afiseaza patratele pe care se poate misca
-		if piese.Board[x][y].Tip != 0 {
-			piese.Clicked = true
-		} else {
-			piese.Clicked = false
-		}
-
-		if piese.Clicked {
-			piese.AfisarePatrateAtacate(x, y)
-		}
-
-		/* Afisare matrice (doar pt testing)
-		for i := 0; i < 8; i++ {
-			fmt.Print(i+1, "     ")
-			for j := 0; j < 8; j++ {
-				fmt.Print(piese.Board[i][j].Control, " ")
+			// Daca apesi pe un patrat atacat apelezi functia de mutare
+			if piese.Board[x][y].Atacat == true {
+				piese.Mutare()
+				piese.Clicked = false
 			}
-			fmt.Print("\n")
+			// Daca ultimul clic a fost pe o piesa, se reseteaza tabla inainte de a inregistra clicul curent
+			if piese.Clicked {
+				piese.Clear(&piese.Board, false)
+			}
+			// Daca clicul a fost pe o piesa afiseaza patratele pe care se poate misca
+			if piese.Board[x][y].Tip != 0 {
+				piese.Clicked = true
+			} else {
+				piese.Clicked = false
+			}
+
+			if piese.Clicked {
+				piese.AfisarePatrateAtacate(x, y)
+			}
+
+			// Afisare matrice (doar pt testing)
+			/*for i := 0; i < 8; i++ {
+				fmt.Print(i+1, "     ")
+				for j := 0; j < 8; j++ {
+					fmt.Print(piese.Board[i][j].Mutat, " ")
+				}
+				fmt.Print("\n")
+			}
+			fmt.Println("=====================================")*/
 		}
-		fmt.Println("=====================================")*/
+		//fmt.Println(ebiten.CurrentFPS())
+
+		piese.VerifPat()
 	}
-	//fmt.Println(ebiten.CurrentFPS())
 	return nil
 }
 
@@ -123,7 +131,7 @@ func (g *game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeigh
 
 func main() {
 	// Initializeaza matricea, jocul si tura
-	piese.Init("random")
+	piese.Init("sandbox")
 	g := &game{}
 
 	// Nu mai da clear la fiecare frame
