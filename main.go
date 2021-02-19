@@ -45,14 +45,14 @@ func (g *game) Update(_ *ebiten.Image) error {
 			}
 
 			// Afisare matrice (doar pt testing)
-			for i := 0; i < 8; i++ {
+			/*for i := 0; i < 8; i++ {
 				fmt.Print(i+1, "     ")
 				for j := 0; j < 8; j++ {
 					fmt.Print(piese.Board[i][j].Control, " ")
 				}
 				fmt.Print("\n")
 			}
-			fmt.Println("=====================================")
+			fmt.Println("=====================================")*/
 		}
 		//fmt.Println(ebiten.CurrentFPS())
 
@@ -117,7 +117,6 @@ func (g *game) Draw(screen *ebiten.Image) {
 			}
 			// Muta <opts> in stanga si mai jos
 			opts.GeoM.Translate(-9/8*piese.Height, piese.Height/8)
-			opts.GeoM.Translate(0, 0)
 		}
 	}
 }

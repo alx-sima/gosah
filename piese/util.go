@@ -140,7 +140,10 @@ func Mutare() {
 			}
 			Turn = 'W'
 		}
-		VerifPat()
+		if !Mat {
+			VerifPat()
+		}
+		
 		Changed = true
 	}
 }
@@ -156,7 +159,12 @@ func verifMat(culoare rune) {
 		}
 	}
 	if Mat {
-		fmt.Println("Ai pierdut")
+		if culoare == 'W' {
+			fmt.Print("Alb ")
+		} else {
+			fmt.Print("Negru ")
+		}
+		fmt.Print("a pierdut")
 	}
 }
 
