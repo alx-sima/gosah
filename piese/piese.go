@@ -9,12 +9,18 @@ import (
 
 // Piesa tine informatii despre un patrat de pe tabla
 type Piesa struct {
-	Atacat    bool // Atacat retine daca in acel patrat poate ajunge piesa selectata (util.Selected)
-	Mutat     bool // Mutat retine daca piesa a fost mutata pana acum
-	EnPassant bool // EnPassant retine daca ultima miscare a pionului a fost de 2 patrate, astfel incat sa fie posibila capturarea prin en passant
-	Tip       rune // Tip retine initiala piesei (in engleza)
-	Culoare   rune // Culoare: W inseamna piesa alba, B inseamna piesa neagra
-	Control   int  // Control: 0 inseamna ca nu e controlat de nimeni acel patrat; 1 inseamna ca e controlat de alb, 2 inseamna ca e controlat de negru, 3 inseamna ca e controlat de ambele
+	// Atacat retine daca in acel patrat poate ajunge piesa selectata (util.Selected)
+	Atacat bool
+	// Mutat retine daca piesa a fost mutata pana acum
+	Mutat bool
+	// EnPassant retine daca ultima miscare a pionului a fost de 2 patrate, astfel incat sa fie posibila capturarea prin en passant
+	EnPassant bool
+	// Tip retine initiala piesei (in engleza)
+	Tip rune
+	// Culoare: W inseamna piesa alba, B inseamna piesa neagra
+	Culoare rune
+	// Control: 0 inseamna ca nu e controlat de nimeni acel patrat; 1 inseamna ca e controlat de alb, 2 inseamna ca e controlat de negru, 3 inseamna ca e controlat de ambele
+	Control int
 }
 
 // PozitiePiesa tine piesa si pozitia ei
@@ -24,16 +30,18 @@ type PozitiePiesa struct {
 }
 
 var (
-	RegeNegru PozitiePiesa // Pozitia regelui negru
-	RegeAlb   PozitiePiesa // Pozitia regelui alb
+	// RegeNegru retine pozitia regelui negru
+	RegeNegru PozitiePiesa
+	// RegeAlb retine pozitia regelui alb
+	RegeAlb PozitiePiesa
 )
 
 /// Constructori
 
 // NewPiesa returneaza o noua piesa, initializata
 func NewPiesa(tip, culoare rune) Piesa {
-		e := Piesa{false, false, false, tip, culoare, 0}
-		return e
+	e := Piesa{false, false, false, tip, culoare, 0}
+	return e
 }
 
 // Empty returneaza o noua piesa "goala"
@@ -45,7 +53,7 @@ func Empty() Piesa {
 // generarePiesa adauga pe tabla si in vectorii de piese o noua piesa la pozitia (i, j), de <tip> si <culoare>
 func generarePiesa(i, j int, tip, culoare rune) {
 	// Functie anonima care verifica daca piesa care trebuie mentionata este valida
-	tipCorect := func(x rune) bool{
+	tipCorect := func(x rune) bool {
 		for _, i := range "RNBQKP" {
 			if x == i {
 				return true
