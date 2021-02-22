@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/hajimehoshi/ebiten"
+	"github.com/hajimehoshi/ebiten/v2"
 )
 
 // GetSquare returneaza patratul in care se afla mouse-ul

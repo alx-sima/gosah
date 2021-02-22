@@ -6,8 +6,8 @@ import (
 	"image/color"
 	"log"
 
-	"github.com/hajimehoshi/ebiten"
-	"github.com/hajimehoshi/ebiten/inpututil"
+	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
 // DO NOT TOUCH THIS IT WORKS
@@ -15,7 +15,7 @@ type game struct{}
 
 // Update proceeds the game state.
 // Update is called every tick (1/60 [s] by default).
-func (g *game) Update(_ *ebiten.Image) error {
+func (g *game) Update() error {
 	// Write your game's logical update.
 	if piese.Pat {
 		piese.Turn = 'X'
@@ -69,10 +69,10 @@ func (g *game) Draw(screen *ebiten.Image) {
 	// Deseneaza doar daca a fost efectuata o schimbare
 	if piese.Changed == true {
 		piese.Changed = false
-		square, _ := ebiten.NewImage(piese.L, piese.L, ebiten.FilterNearest)
+		square := ebiten.NewImage(piese.L, piese.L)
 		opts := &ebiten.DrawImageOptions{}
 
-		_ = screen.Clear()
+		screen.Clear()
 
 		for i := 0; i < 8; i++ {
 			for j := 0; j < 8; j++ {
@@ -86,30 +86,30 @@ func (g *game) Draw(screen *ebiten.Image) {
 
 				// Coloreaza cu galben patratele in care se poate ajunge cu piesa
 				if piese.Board[i][j].Atacat {
-					_ = square.Fill(color.RGBA{R: 238, G: 238, A: 255})
+					square.Fill(color.RGBA{R: 238, G: 238, A: 255})
 					// Coloreaza patratul regelui alb cu rosu daca e in sah
 				} else if piese.SahAlb && i == piese.RegeAlb.X && j == piese.RegeAlb.Y {
-					_ = square.Fill(color.RGBA{R: 255, A: 255})
+					square.Fill(color.RGBA{R: 255, A: 255})
 					// Coloreaza patratul regelui negru cu rosu daca e in sah
 				} else if piese.SahNegru && i == piese.RegeNegru.X && j == piese.RegeNegru.Y {
-					_ = square.Fill(color.RGBA{R: 255, A: 255})
+					square.Fill(color.RGBA{R: 255, A: 255})
 				} else {
 					if (i+j)%2 == 0 {
 						// Coloreaza patratele albe
-						_ = square.Fill(color.RGBA{R: 205, G: 133, B: 63, A: 170})
+						square.Fill(color.RGBA{R: 205, G: 133, B: 63, A: 170})
 					} else {
 						// Coloreaza patratele negre
-						_ = square.Fill(color.RGBA{R: 128, G: 128, B: 128, A: 30})
+						square.Fill(color.RGBA{R: 128, G: 128, B: 128, A: 30})
 					}
 				}
 
 				// Deseneaza patratul
-				_ = screen.DrawImage(square, opts)
+				screen.DrawImage(square, opts)
 
 				img := piese.Board[i][j].DrawPiece()
 				if img != nil {
 					//opts.GeoM.Scale(0.8, 0.8)
-					_ = screen.DrawImage(img, opts)
+					screen.DrawImage(img, opts)
 					//opts.GeoM.Scale(1.25, 1.25)
 				}
 				// Muta <opts> la dreapta
@@ -128,10 +128,13 @@ func (g *game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeigh
 	return outsideHeight, outsideHeight
 }
 
+func NewGame() *game {
+	return &game{}
+}
+
 func main() {
 	// Initializeaza matricea, jocul si tura
 	piese.Init()
-	g := &game{}
 
 	// Nu mai da clear la fiecare frame
 	ebiten.SetScreenClearedEveryFrame(false)
@@ -142,7 +145,7 @@ func main() {
 	ebiten.SetWindowTitle("Sah")
 
 	// Porneste jocul
-	if err := ebiten.RunGame(g); err != nil {
+	if err := ebiten.RunGame(NewGame()); err != nil {
 		log.Fatal(err)
 	}
 }

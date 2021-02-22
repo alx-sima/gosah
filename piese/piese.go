@@ -1,10 +1,13 @@
 package piese
 
 import (
-	"fmt"
+	"bytes"
+	images "gosah/imagini"
+	"image"
+	_ "image/png"
+	"log"
 
-	"github.com/hajimehoshi/ebiten"
-	"github.com/hajimehoshi/ebiten/ebitenutil"
+	"github.com/hajimehoshi/ebiten/v2"
 )
 
 // Piesa tine informatii despre un patrat de pe tabla
@@ -32,8 +35,8 @@ var (
 
 // NewPiesa returneaza o noua piesa, initializata
 func NewPiesa(tip, culoare rune) Piesa {
-		e := Piesa{false, false, false, tip, culoare, 0}
-		return e
+	e := Piesa{false, false, false, tip, culoare, 0}
+	return e
 }
 
 // Empty returneaza o noua piesa "goala"
@@ -45,7 +48,7 @@ func Empty() Piesa {
 // generarePiesa adauga pe tabla si in vectorii de piese o noua piesa la pozitia (i, j), de <tip> si <culoare>
 func generarePiesa(i, j int, tip, culoare rune) {
 	// Functie anonima care verifica daca piesa care trebuie mentionata este valida
-	tipCorect := func(x rune) bool{
+	tipCorect := func(x rune) bool {
 		for _, i := range "RNBQKP" {
 			if x == i {
 				return true
@@ -72,9 +75,11 @@ func generarePiesa(i, j int, tip, culoare rune) {
 
 /// Metode
 
+var ebitenImage *ebiten.Image
+
 // DrawPiece returneaza imaginea piesei ce trebuie desenata, nil daca nu gaseste nimc
 func (p *Piesa) DrawPiece() *ebiten.Image {
-	var culoare, tip string
+	/*var culoare, tip string
 	if p.Culoare == 'W' {
 		culoare = "w"
 	} else {
@@ -98,8 +103,107 @@ func (p *Piesa) DrawPiece() *ebiten.Image {
 	}
 	// Creeaza path-ul imaginii de randat
 	path := fmt.Sprintf("imagini/%s_%s_png_128px.png", culoare, tip)
-	img, _, _ := ebitenutil.NewImageFromFile(path, ebiten.FilterNearest)
-	return img
+	img, _, _ := ebitenutil.NewImageFromFile(path, ebiten.FilterNearest)*/
+	switch p.Tip {
+	case 'K':
+		if p.Culoare == 'W' {
+			img, _, err := image.Decode(bytes.NewReader(images.WhiteKing))
+			if err != nil {
+				log.Fatal(err)
+			}
+			ebitenImage = ebiten.NewImageFromImage(img)
+			return ebitenImage
+		} else {
+			img, _, err := image.Decode(bytes.NewReader(images.BlackKing))
+			if err != nil {
+				log.Fatal(err)
+			}
+			ebitenImage = ebiten.NewImageFromImage(img)
+			return ebitenImage
+		}
+	case 'P':
+		if p.Culoare == 'W' {
+			img, _, err := image.Decode(bytes.NewReader(images.WhitePawn))
+			if err != nil {
+				log.Fatal(err)
+			}
+			ebitenImage = ebiten.NewImageFromImage(img)
+			return ebitenImage
+		} else {
+			img, _, err := image.Decode(bytes.NewReader(images.BlackPawn))
+			if err != nil {
+				log.Fatal(err)
+			}
+			ebitenImage = ebiten.NewImageFromImage(img)
+			return ebitenImage
+		}
+	case 'B':
+		if p.Culoare == 'W' {
+			img, _, err := image.Decode(bytes.NewReader(images.WhiteBishop))
+			if err != nil {
+				log.Fatal(err)
+			}
+			ebitenImage = ebiten.NewImageFromImage(img)
+			return ebitenImage
+		} else {
+			img, _, err := image.Decode(bytes.NewReader(images.BlackBishop))
+			if err != nil {
+				log.Fatal(err)
+			}
+			ebitenImage = ebiten.NewImageFromImage(img)
+			return ebitenImage
+		}
+	case 'N':
+		if p.Culoare == 'W' {
+			img, _, err := image.Decode(bytes.NewReader(images.WhiteKnight))
+			if err != nil {
+				log.Fatal(err)
+			}
+			ebitenImage = ebiten.NewImageFromImage(img)
+			return ebitenImage
+		} else {
+			img, _, err := image.Decode(bytes.NewReader(images.BlackKnight))
+			if err != nil {
+				log.Fatal(err)
+			}
+			ebitenImage = ebiten.NewImageFromImage(img)
+			return ebitenImage
+		}
+	case 'R':
+		if p.Culoare == 'W' {
+			img, _, err := image.Decode(bytes.NewReader(images.WhiteRook))
+			if err != nil {
+				log.Fatal(err)
+			}
+			ebitenImage = ebiten.NewImageFromImage(img)
+			return ebitenImage
+		} else {
+			img, _, err := image.Decode(bytes.NewReader(images.BlackRook))
+			if err != nil {
+				log.Fatal(err)
+			}
+			ebitenImage = ebiten.NewImageFromImage(img)
+			return ebitenImage
+		}
+	case 'Q':
+		if p.Culoare == 'W' {
+			img, _, err := image.Decode(bytes.NewReader(images.WhiteQueen))
+			if err != nil {
+				log.Fatal(err)
+			}
+			ebitenImage = ebiten.NewImageFromImage(img)
+			return ebitenImage
+		} else {
+			img, _, err := image.Decode(bytes.NewReader(images.BlackQueen))
+			if err != nil {
+				log.Fatal(err)
+			}
+			ebitenImage = ebiten.NewImageFromImage(img)
+			return ebitenImage
+		}
+	default:
+		return nil
+	}
 }
 
 // Move verifica pe ce patrate se poate misca o anumita piesa si apeleaza functia corespunzatoare
