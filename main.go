@@ -10,13 +10,15 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
-// DO NOT TOUCH THIS IT WORKS
+// game e o structura care implementeaza interfata ebiten.Game
 type game struct{}
 
 // Update proceeds the game state.
 // Update is called every tick (1/60 [s] by default).
 func (g *game) Update() error {
-	// Write your game's logical update.
+	if piese.Editing {
+		return nil
+	}
 	if piese.Pat {
 		piese.Turn = 'X'
 		fmt.Println("Ai egalat")

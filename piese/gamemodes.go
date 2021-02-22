@@ -12,7 +12,7 @@ func Init() {
 	Turn = 'W'
 
 	// Repeta pana cand se incarca un nivel valid
-	fmt.Println("Ce nivel vei juca? (default: random, ?: listare variante)")
+	fmt.Println("Ce nivel vei juca? (default: random, editor: deseneaza nivel, ?: listare variante)")
 	for nivel, invalid := "random", true; invalid; {
 
 		fmt.Scanf("%s", &nivel)
@@ -22,7 +22,11 @@ func Init() {
 		case "random":
 			initializareMatriceRandomOglindit()
 			invalid = false
-		// Daca nu gaseste in modurile prestabilite, verifica in folderul nivele	
+		case "editor":
+			go editor()
+			Editing = true
+			invalid = false
+		// Daca nu gaseste in modurile prestabilite, verifica in folderul nivele
 		default:
 			if initializareFisier(nivel) {
 				invalid = false
