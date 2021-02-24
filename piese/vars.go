@@ -38,4 +38,8 @@ var (
 	Turn rune
 	// Editing retine true daca este in modul editare, false daca e joc normal
 	Editing bool
+	// RegeNegru retine pozitia regelui negru
+	RegeNegru PozitiePiesa
+	// RegeAlb retine pozitia regelui alb
+	RegeAlb PozitiePiesa
 )

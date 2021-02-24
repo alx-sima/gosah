@@ -135,7 +135,7 @@ func editor() {
 
 		// Click-stanga pune piese albe
 		if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
-			if x, y := GetSquare(); checkInBound(x, y) {
+			if x, y := GetSquare(); verifInBound(x, y) {
 				if RegeAlb.Ref == nil || tip != 'K' {
 					generarePiesa(x, y, tip, 'W')
 				}
@@ -145,7 +145,7 @@ func editor() {
 
 		// Click-dreapta pune piese negre
 		if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonRight) {
-			if x, y := GetSquare(); checkInBound(x, y) {
+			if x, y := GetSquare(); verifInBound(x, y) {
 				if RegeNegru.Ref == nil || tip != 'K' {
 					generarePiesa(x, y, tip, 'B')
 				}
@@ -154,7 +154,7 @@ func editor() {
 
 		// Click-rotita sterge piese
 		if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonMiddle) {
-			if x, y := GetSquare(); checkInBound(x, y) {
+			if x, y := GetSquare(); verifInBound(x, y) {
 				if Board[x][y].Tip == 'K' {
 					if Board[x][y].Culoare == 'W' {
 						RegeAlb = PozitiePiesa{}

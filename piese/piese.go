@@ -30,16 +30,11 @@ type Piesa struct {
 
 // PozitiePiesa tine piesa si pozitia ei
 type PozitiePiesa struct {
-	Ref  *Piesa // Referinta la piesa memorata
-	X, Y int    // Pozitia piesei pe tabla
+	// Referinta la piesa memorata
+	Ref *Piesa
+	// Pozitia piesei pe tabla
+	X, Y int
 }
-
-var (
-	// RegeNegru retine pozitia regelui negru
-	RegeNegru PozitiePiesa
-	// RegeAlb retine pozitia regelui alb
-	RegeAlb PozitiePiesa
-)
 
 /// Constructori
 
@@ -152,11 +147,6 @@ func (p Piesa) Move(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 	}
 }
 
-// checkInBound verifica daca pozitia se afla pe tabla
-func checkInBound(a, b int) bool {
-	return a >= 0 && b >= 0 && a < 8 && b < 8
-}
-
 // Clear curata tabla de miscari posibile + verifica pentru pozitiile actuale controlul asupra fieccarui patrat
 func Clear(tabla *[8][8]Piesa, moved bool) {
 	for i := 0; i < 8; i++ {
@@ -200,62 +190,4 @@ func verifPatrateAtacate(tabla *[8][8]Piesa) {
 			tabla[i][j].Move(tabla, i, j, false, false)
 		}
 	}
-}
-
-// verifIesireSah verifica daca exista miscare care scoate regele din sah
-func verifIesireSah(tabla *[8][8]Piesa, x, y, m, n int) {
-
-	if !verifSah(tabla, x, y, m, n) {
-		tabla[m][n].Atacat = true
-	}
-}
-
-// verifSah verifica daca mutarea piesei alese din patratul x, y in patratul m, n scoate regele din sah. Returneaza true daca ramane in sah, false daca iese din sah
-func verifSah(tabla *[8][8]Piesa, x, y, m, n int) bool {
-	// Muta piesa pe patratul (m, n) (temporar)
-	piesa, culoare, ok := tabla[m][n].Tip, tabla[m][n].Culoare, false
-
-	tabla[m][n].Tip = tabla[x][y].Tip
-	tabla[m][n].Culoare = tabla[x][y].Culoare
-	tabla[x][y].Tip = 0
-	tabla[x][y].Culoare = 0
-
-	// Resetam matricea care arata controlul fiecarui patrat
-	verifPatrateAtacate(tabla)
-
-	if tabla[m][n].Tip == 'K' {
-		if tabla[m][n].Culoare == 'B' {
-			if tabla[m][n].eControlatDeCuloare('W') {
-				ok = true
-			}
-		} else {
-			if tabla[m][n].eControlatDeCuloare('B') {
-				ok = true
-			}
-		}
-	} else {
-		// Daca regele nu se mai afla in sah, notam mutarea efectuata drept posibila
-		ctrlRegeNegru := tabla[RegeNegru.X][RegeNegru.Y]
-		ctrlRegeAlb := tabla[RegeAlb.X][RegeAlb.Y]
-
-		if tabla[m][n].Culoare == 'B' {
-			if ctrlRegeNegru.eControlatDeCuloare('W') {
-				ok = true
-			}
-		} else {
-			if ctrlRegeAlb.eControlatDeCuloare('B') {
-				ok = true
-			}
-		}
-	}
-
-	// Punem piesa inapoi unde era
-	tabla[x][y].Tip = tabla[m][n].Tip
-	tabla[x][y].Culoare = tabla[m][n].Culoare
-	tabla[m][n].Tip = piesa
-	tabla[m][n].Culoare = culoare
-
-	// Resetam matricea care arata controlul fiecarui patrat la starea originala
-	verifPatrateAtacate(tabla)
-	return ok
 }
