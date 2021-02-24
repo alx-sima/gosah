@@ -4,7 +4,8 @@ go 1.15
 
 require (
 	github.com/go-gl/glfw/v3.3/glfw v0.0.0-20201108214237-06ea97f0c265 // indirect
-	github.com/hajimehoshi/ebiten/v2 v2.0.5
+	github.com/hajimehoshi/ebiten v1.12.9
+	github.com/hajimehoshi/ebiten/v2 v2.0.6
 	github.com/kr/text v0.2.0 // indirect
 	golang.org/x/exp v0.0.0-20210220032938-85be41e4509f // indirect
 	golang.org/x/image v0.0.0-20210220032944-ac19c3e999fb // indirect
