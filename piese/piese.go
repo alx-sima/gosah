@@ -4,6 +4,8 @@ import (
 	"bytes"
 	images "gosah/imagini"
 	"image"
+
+	// importat ca _ ca altfel nu merge
 	_ "image/png"
 	"log"
 
@@ -83,132 +85,48 @@ func generarePiesa(i, j int, tip, culoare rune) {
 
 /// Metode
 
-var ebitenImage *ebiten.Image
+// loadImageFromBytes incarca din vectorul octeti imaginea si o returneaza
+func loadImageFromBytes(octeti []byte) *ebiten.Image {
+	img, _, err := image.Decode(bytes.NewReader(octeti))
+	if err != nil {
+		log.Fatal(err)
+	}
+	return ebiten.NewImageFromImage(img)
+}
 
-// DrawPiece returneaza imaginea piesei ce trebuie desenata, nil daca nu gaseste nimc
+// DrawPiece returneaza imaginea piesei ce trebuie desenata, nil daca nu gaseste nimic
 func (p *Piesa) DrawPiece() *ebiten.Image {
-	/*var culoare, tip string
-	if p.Culoare == 'W' {
-		culoare = "w"
-	} else {
-		culoare = "b"
-	}
-	switch p.Tip {
-	case 'K':
-		tip = "king"
-	case 'P':
-		tip = "pawn"
-	case 'B':
-		tip = "bishop"
-	case 'N':
-		tip = "knight"
-	case 'R':
-		tip = "rook"
-	case 'Q':
-		tip = "queen"
-	default:
-		return nil
-	}
-	// Creeaza path-ul imaginii de randat
-	path := fmt.Sprintf("imagini/%s_%s_png_128px.png", culoare, tip)
-	img, _, _ := ebitenutil.NewImageFromFile(path, ebiten.FilterNearest)*/
 	switch p.Tip {
 	case 'K':
 		if p.Culoare == 'W' {
-			img, _, err := image.Decode(bytes.NewReader(images.WhiteKing))
-			if err != nil {
-				log.Fatal(err)
-			}
-			ebitenImage = ebiten.NewImageFromImage(img)
-			return ebitenImage
-		} else {
-			img, _, err := image.Decode(bytes.NewReader(images.BlackKing))
-			if err != nil {
-				log.Fatal(err)
-			}
-			ebitenImage = ebiten.NewImageFromImage(img)
-			return ebitenImage
+			return loadImageFromBytes(images.WhiteKing)
 		}
+		return loadImageFromBytes(images.BlackKing)
 	case 'P':
 		if p.Culoare == 'W' {
-			img, _, err := image.Decode(bytes.NewReader(images.WhitePawn))
-			if err != nil {
-				log.Fatal(err)
-			}
-			ebitenImage = ebiten.NewImageFromImage(img)
-			return ebitenImage
-		} else {
-			img, _, err := image.Decode(bytes.NewReader(images.BlackPawn))
-			if err != nil {
-				log.Fatal(err)
-			}
-			ebitenImage = ebiten.NewImageFromImage(img)
-			return ebitenImage
+			return loadImageFromBytes(images.WhitePawn)
 		}
+		return loadImageFromBytes(images.BlackPawn)
 	case 'B':
 		if p.Culoare == 'W' {
-			img, _, err := image.Decode(bytes.NewReader(images.WhiteBishop))
-			if err != nil {
-				log.Fatal(err)
-			}
-			ebitenImage = ebiten.NewImageFromImage(img)
-			return ebitenImage
-		} else {
-			img, _, err := image.Decode(bytes.NewReader(images.BlackBishop))
-			if err != nil {
-				log.Fatal(err)
-			}
-			ebitenImage = ebiten.NewImageFromImage(img)
-			return ebitenImage
+			return loadImageFromBytes(images.WhiteBishop)
 		}
+		return loadImageFromBytes(images.BlackBishop)
 	case 'N':
 		if p.Culoare == 'W' {
-			img, _, err := image.Decode(bytes.NewReader(images.WhiteKnight))
-			if err != nil {
-				log.Fatal(err)
-			}
-			ebitenImage = ebiten.NewImageFromImage(img)
-			return ebitenImage
-		} else {
-			img, _, err := image.Decode(bytes.NewReader(images.BlackKnight))
-			if err != nil {
-				log.Fatal(err)
-			}
-			ebitenImage = ebiten.NewImageFromImage(img)
-			return ebitenImage
+			return loadImageFromBytes(images.WhiteKnight)
 		}
+		return loadImageFromBytes(images.BlackKnight)
 	case 'R':
 		if p.Culoare == 'W' {
-			img, _, err := image.Decode(bytes.NewReader(images.WhiteRook))
-			if err != nil {
-				log.Fatal(err)
-			}
-			ebitenImage = ebiten.NewImageFromImage(img)
-			return ebitenImage
-		} else {
-			img, _, err := image.Decode(bytes.NewReader(images.BlackRook))
-			if err != nil {
-				log.Fatal(err)
-			}
-			ebitenImage = ebiten.NewImageFromImage(img)
-			return ebitenImage
+			return loadImageFromBytes(images.WhiteRook)
 		}
+		return loadImageFromBytes(images.BlackRook)
 	case 'Q':
 		if p.Culoare == 'W' {
-			img, _, err := image.Decode(bytes.NewReader(images.WhiteQueen))
-			if err != nil {
-				log.Fatal(err)
-			}
-			ebitenImage = ebiten.NewImageFromImage(img)
-			return ebitenImage
-		} else {
-			img, _, err := image.Decode(bytes.NewReader(images.BlackQueen))
-			if err != nil {
-				log.Fatal(err)
-			}
-			ebitenImage = ebiten.NewImageFromImage(img)
-			return ebitenImage
+			return loadImageFromBytes(images.WhiteQueen)
 		}
+		return loadImageFromBytes(images.BlackQueen)
 	default:
 		return nil
 	}
@@ -234,8 +152,8 @@ func (p Piesa) Move(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 	}
 }
 
-// inBound verifica daca pozitia se afla pe tabla
-func inBound(a, b int) bool {
+// checkInBound verifica daca pozitia se afla pe tabla
+func checkInBound(a, b int) bool {
 	return a >= 0 && b >= 0 && a < 8 && b < 8
 }
 

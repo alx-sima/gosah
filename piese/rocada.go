@@ -2,6 +2,9 @@ package piese
 
 // returneaza daca regele de la (x, y) poate face rocada la (x, y + n)
 func verifRocada(x, y, n int) bool {
+	if !checkInBound(x, y+n) {
+		return false
+	}
 	// Daca regele sau tura au fost mutate, rocada nu e posibila
 	if Board[x][y+n].Mutat {
 		return false

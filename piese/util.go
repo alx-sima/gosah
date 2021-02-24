@@ -78,12 +78,12 @@ func Mutare() {
 		// IMPORTANT! aceasta verificare pentru pion trebuie facuta inainte de clear
 		// Daca piesa captureaza prin en passant, elimina piesa capturata de pe tabla
 		if Board[x][y].Tip == 'P' {
-			if inBound(x-1, y) {
+			if checkInBound(x-1, y) {
 				if Board[x-1][y].EnPassant && Selected.X-x == -1 && (Selected.Y-y == 1 || Selected.Y-y == -1) {
 					Board[x-1][y] = Empty()
 				}
 			}
-			if inBound(x+1, y) {
+			if checkInBound(x+1, y) {
 				if Board[x+1][y].EnPassant && Selected.X-x == 1 && (Selected.Y-y == 1 || Selected.Y-y == -1) {
 					Board[x+1][y] = Empty()
 				}
