@@ -2,7 +2,6 @@ package piese
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/fs"
 	"io/ioutil"
 	"os"
@@ -24,11 +23,11 @@ type data struct {
 }
 
 // initializareFisier initializeaza nivele speciale din fisierul clasic.json
-func initializareFisier(fileName string) bool {
+func initializareFisier(fileName string) {
 	// Deschide fisierul si verifica daca e valid
 	f, _ := ioutil.ReadFile("nivele/" + fileName + ".json")
 	if !json.Valid(f) {
-		return false
+		panic("fisierul este invalid")
 	}
 
 	// Desface fisierul
@@ -52,19 +51,23 @@ func initializareFisier(fileName string) bool {
 		}
 	}
 	// Initializat cu succes
-	return true
+	return
 }
 
-// listare cauta toate fisierele din folderul /nivele/ si le afiseaza fara extensia ".json"
-func listare() {
-	fmt.Println("?")
-	fmt.Println("random")
-	fmt.Println("editor")
+// citireNivele cauta toate fisierele din folderul /nivele/ si le afiseaza fara extensia ".json"
+func citireNivele() (nivele []string) {
+	// Declaratii
+	nivele = append(nivele, "random")
 	files, _ := os.ReadDir("./nivele")
+
+	// Parcurge fisierele din "./nivele"
 	for _, f := range files {
 		numeFisier := strings.ReplaceAll(f.Name(), ".json", "")
-		fmt.Println(numeFisier)
+		nivele = append(nivele, numeFisier)
 	}
+
+	nivele = append(nivele, "editor")
+	return
 }
 func editor() {
 	// Default e pionul
@@ -135,7 +138,7 @@ func editor() {
 
 		// Click-stanga pune piese albe
 		if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
-			if x, y := GetSquare(); verifInBound(x, y) {
+			if x, y, err := GetSquare(); err == 0 {
 				if RegeAlb.Ref == nil || tip != 'K' {
 					generarePiesa(x, y, tip, 'W')
 				}
@@ -145,7 +148,7 @@ func editor() {
 
 		// Click-dreapta pune piese negre
 		if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonRight) {
-			if x, y := GetSquare(); verifInBound(x, y) {
+			if x, y, err := GetSquare(); err == 0 {
 				if RegeNegru.Ref == nil || tip != 'K' {
 					generarePiesa(x, y, tip, 'B')
 				}
@@ -154,7 +157,7 @@ func editor() {
 
 		// Click-rotita sterge piese
 		if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonMiddle) {
-			if x, y := GetSquare(); verifInBound(x, y) {
+			if x, y, err := GetSquare(); err == 0 {
 				if Board[x][y].Tip == 'K' {
 					if Board[x][y].Culoare == 'W' {
 						RegeAlb = PozitiePiesa{}

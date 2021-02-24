@@ -91,6 +91,9 @@ func loadImageFromBytes(octeti []byte) *ebiten.Image {
 
 // DrawPiece returneaza imaginea piesei ce trebuie desenata, nil daca nu gaseste nimic
 func (p *Piesa) DrawPiece() *ebiten.Image {
+	if !Started {
+		return nil
+	} 
 	switch p.Tip {
 	case 'K':
 		if p.Culoare == 'W' {

@@ -7,6 +7,8 @@ const (
 	Height = 1080
 	// L retine latura unui patrat
 	L = Height / 8
+	// Offset retine y-ul care trebuie adaugat pt padding
+	Offset = (Width - Height) / 2
 )
 
 var (
@@ -42,4 +44,8 @@ var (
 	RegeNegru PozitiePiesa
 	// RegeAlb retine pozitia regelui alb
 	RegeAlb PozitiePiesa
+	// Started retine daca jocul a inceput
+	Started bool
+	// Nivele retine numele nivelelor din fisiere (+random si editor)
+	Nivele []string
 )

@@ -1,42 +1,36 @@
 package piese
 
 import (
-	"fmt"
 	"math/rand"
 	"time"
 )
 
-// Init implementeaza gamemodeul
-func Init() {
+// init pentru package-ul piese
+func init() {
+	// Initializeaza seedul rand-ului
+	rand.Seed(time.Now().Unix())
+
 	// Albul incepe
 	Turn = 'W'
 
-	// Repeta pana cand se incarca un nivel valid
-	fmt.Println("Ce nivel vei juca? (default: random, editor: deseneaza nivel, ?: listare variante)")
-	for nivel, invalid := "random", true; invalid; {
+	// Genereaza nivelele din fisiera
+	Nivele = citireNivele()
+}
 
-		fmt.Scanf("%s", &nivel)
-		switch nivel {
-		case "?":
-			listare()
-		case "random":
-			initializareMatriceRandomOglindit()
-			invalid = false
-		case "editor":
-			go editor()
-			Editing = true
-			invalid = false
-		// Daca nu gaseste in modurile prestabilite, verifica in folderul nivele
-		default:
-			if initializareFisier(nivel) {
-				invalid = false
-			} else {
-				fmt.Println("format gresit")
-			}
-		}
+// IncarcaNivel incarca nivel in Tabla
+func IncarcaNivel(nivel string) {
+	switch nivel {
+	case "random":
+		initializareMatriceRandomOglindit()
+	case "editor":
+		go editor()
+		Editing = true
+	// Daca nu gaseste in modurile prestabilite, verifica in folderul nivele
+	default:
+		initializareFisier(nivel)
 	}
 	// FIXME: Cronometru
-	// go cronometru()
+	// go cronometru()*/
 }
 
 // initializareMatriceRandomOglindit genereaza piesele aleatoare pt. tabla de joc
@@ -44,9 +38,6 @@ func initializareMatriceRandomOglindit() {
 	// Initializeaza regii
 	generarePiesa(0, 4, 'K', 'B')
 	generarePiesa(7, 4, 'K', 'W')
-
-	// Initializeaza seedul rand-ului
-	rand.Seed(time.Now().Unix())
 
 	for i := 0; i < 2; i++ {
 		for j := 0; j < 8; j++ {

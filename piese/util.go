@@ -8,14 +8,24 @@ import (
 )
 
 // GetSquare returneaza patratul in care se afla mouse-ul
-func GetSquare() (int, int) {
-	j, i := ebiten.CursorPosition()
-	i, j = i/L, j/L
-	Changed = true
-	if i < 0 || j < 0 || i > 7 || j > 7 {
-		panic("mouse in afara tablei")
+func GetSquare() (i, j, err int) {
+	j, i = ebiten.CursorPosition()
+
+	// Returneaza err=-1 daca e prea in stanga sau prea sus
+	if i < 0 || j < Offset {
+		return 0, 0, -1
 	}
-	return i, j
+
+	i, j = (i)/L, (j-Offset)/L
+
+	// Returneaza err=1 daca e prea in dreapta sau prea jos
+	if i > 7 || j > 7 {
+		return 0, 0, 1
+	}
+
+	// Returneaza fara erori
+	Changed = true
+	return
 }
 
 // Cronometru ar trebui sa numere 10 minute pt fiecare jucator
@@ -38,7 +48,7 @@ func AfisarePatrateAtacate(x, y int) {
 
 // Mutare muta piesa selectata pe pozitia ceruta
 func Mutare() {
-	if x, y := GetSquare(); Board[x][y].Atacat {
+	if x, y, err := GetSquare(); err == 0 && Board[x][y].Atacat {
 
 		if Board[x][y].Tip != 0 {
 			if Turn == 'W' {
