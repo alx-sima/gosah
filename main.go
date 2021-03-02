@@ -14,8 +14,8 @@ import (
 type game struct{}
 
 var (
-	selected int
-	textFont font.Face
+	selected          int
+	textFont, bigFont font.Face
 )
 
 // Layout takes the outside size (e.g., the window size) and returns the (logical) screen size.
@@ -39,6 +39,14 @@ func init() {
 	const dpi = 72
 	textFont, err = opentype.NewFace(tt, &opentype.FaceOptions{
 		Size:    72,
+		DPI:     dpi,
+		Hinting: font.HintingFull,
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+	bigFont, err = opentype.NewFace(tt, &opentype.FaceOptions{
+		Size:    144,
 		DPI:     dpi,
 		Hinting: font.HintingFull,
 	})

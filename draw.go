@@ -1,17 +1,15 @@
 package main
 
 import (
-	"gosah/piese"
-	"image/color"
-
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/text"
+	"gosah/piese"
+	"image/color"
 )
 
 // Draw draws the game screen.
 // Draw is called every frame typically 1/60[s] for 60Hz display).
 func (g *game) Draw(screen *ebiten.Image) {
-
 	// FIXME: tremura ecranul cand misti
 	// Deseneaza doar daca a fost efectuata o schimbare
 	if piese.Changed == true {
@@ -66,10 +64,54 @@ func (g *game) Draw(screen *ebiten.Image) {
 		}
 	}
 
-	// Seteaza titlul nivelului (daca e in meniu)
+	// Deseneaza overlay-ul
 	if !piese.Started {
 		titlu := piese.Nivele[selected]
+
+		// Masoara dim. textului pt a-l centra
 		textWidth := text.BoundString(textFont, titlu).Dx()
+		sageataHeight := text.BoundString(bigFont, "<").Dy()
+		sageataWidth := text.BoundString(bigFont, ">").Dx()
+
+		// Deseneaza titlul nivelului
 		text.Draw(screen, titlu, textFont, (piese.Width-textWidth)/2, 80, color.White)
+
+		// Deseneaza "<" si ">" pt selectia nivelului
+		text.Draw(screen, "<", bigFont, piese.Offset-sageataWidth-12,
+			(piese.Height+sageataHeight)/2, color.White)
+		text.Draw(screen, ">", bigFont, piese.Width-piese.Offset-12,
+			(piese.Height+sageataHeight)/2, color.White)
+	}
+
+	// Afiseaza statusul jocului dupa ce s-a terminat
+	if piese.Mat || piese.Pat {
+		//time.Sleep(1 * time.Second)
+
+		// Deseneaza fundalul
+		rect := ebiten.NewImage(piese.Width, piese.Height)
+		rect.Fill(color.RGBA{R: 50, G: 50, B: 50, A: 50})
+
+		opts := &ebiten.DrawImageOptions{}
+		screen.DrawImage(rect, opts)
+
+		var titlu string
+		switch piese.Castigator {
+		case "W":
+			titlu = "Alb a castigat"
+		case "B":
+			titlu = "Negru a castigat"
+		default:
+			titlu = "Egalitate"
+		}
+
+		// Centreaza textul
+		ofsx := text.BoundString(textFont, titlu).Dx()
+		ofsy := text.BoundString(textFont, titlu).Dy()
+
+		// Deseneaza textul
+		text.Draw(screen, titlu, textFont,
+			(piese.Width-ofsx)/2, (piese.Height-ofsy)/2,
+			color.RGBA{R: 255, G: 69, B: 0, A: 255})
+		return
 	}
 }

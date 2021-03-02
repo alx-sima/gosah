@@ -1,7 +1,5 @@
 package piese
 
-import "fmt"
-
 // verifInBound verifica daca pozitia se ala pe tabla
 func verifInBound(a, b int) bool {
 	return a >= 0 && b >= 0 && a < 8 && b < 8
@@ -155,11 +153,9 @@ func verifMat(culoare rune) {
 	}
 	if Mat {
 		if culoare == 'W' {
-			fmt.Print("Alb ")
+			Castigator = "B"
 		} else {
-			fmt.Print("Negru ")
-
-			fmt.Print("a pierdut")
+			Castigator = "W"
 		}
 	}
 }

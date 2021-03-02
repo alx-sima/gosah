@@ -2,14 +2,12 @@ package piese
 
 import (
 	"encoding/json"
+	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"io/fs"
 	"io/ioutil"
 	"os"
-
 	"strings"
-
-	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
 //data tine structura pentru fisierele .json
@@ -97,8 +95,8 @@ func editor() {
 		if inpututil.IsKeyJustPressed(ebiten.KeyP) {
 			tip = 'P'
 		}
-		// Daca apesi ESC salveaza si iese
-		if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
+		// Daca apesi Ctrl+S salveaza si iese
+		if  inpututil.KeyPressDuration(ebiten.KeyControl) > 0 && inpututil.KeyPressDuration(ebiten.KeyS) > 0 {
 			var tabla []string
 
 			for i := 0; i < 8; i++ {
@@ -114,23 +112,21 @@ func editor() {
 					piesa := string(Board[i][j].Tip)
 
 					// Daca piesa e neagra, o printeaza cu litera mica
-
 					if Board[i][j].Culoare == 'B' {
 						piesa = strings.ToLower(piesa)
 					}
-
 					rand += piesa
 				}
-
 				tabla = append(tabla, rand)
 			}
 
 			// Printeaza informatiile in format json (indentat)
 			niv := data{8, 8, tabla}
 			text, _ := json.MarshalIndent(niv, "", "\t")
-
 			// TODO: alege numele fisierului cand salvezi
-			os.WriteFile("nivele/edited.json", text, fs.ModePerm)
+			if err := os.WriteFile("nivele/custom.json", text, fs.ModePerm); err != nil{
+				panic(err)
+			}
 
 			// Inchide programul
 			os.Exit(0)

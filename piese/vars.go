@@ -48,4 +48,6 @@ var (
 	Started bool
 	// Nivele retine numele nivelelor din fisiere (+random si editor)
 	Nivele []string
+	// Castigator retine cine a castigat
+	Castigator string
 )
