@@ -54,10 +54,10 @@ func init() {
 		log.Fatal(err)
 	}
 }
+
 func main() {
 	// Activat, deseneaza doar la update
 	//ebiten.SetScreenClearedEveryFrame(false)
-	piese.Changed = true
 
 	// Specify the window size as you like. Here, a doubled size is specified.
 	ebiten.SetWindowSize(piese.Width, piese.Height)

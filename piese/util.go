@@ -24,18 +24,45 @@ func GetSquare() (i, j, err int) {
 	}
 
 	// Returneaza fara erori
-	Changed = true
 	return
 }
 
-// Cronometru ar trebui sa numere 10 minute pt fiecare jucator
+// Cronometru numara 10 minute pt fiecare jucator
 func Cronometru() {
-	// TODO: adaugat cronometru
-	for sec := 10; sec > 0; sec-- {
-		fmt.Println(sec)
-		time.Sleep(1 * time.Second)
+
+	time.Sleep(time.Second)
+
+	if Turn == 'W' {
+		fmt.Printf("w: %v\n", TimpRamas)
+		if TimpRamas.Alb.Sec != 0 {
+			TimpRamas.Alb.Sec--
+		} else {
+			TimpRamas.Alb.Min--
+			TimpRamas.Alb.Sec = 59
+		}
+		if TimpRamas.Alb.Min == 0 && TimpRamas.Alb.Sec == 0 {
+			Mat = true
+			Castigator = "B"
+			return
+		}
+	} else {
+		fmt.Printf("b: %v\n", TimpRamas)
+		if TimpRamas.Negru.Sec != 0 {
+			TimpRamas.Negru.Sec--
+		} else {
+			TimpRamas.Negru.Min--
+			TimpRamas.Negru.Sec = 59
+		}
+		if TimpRamas.Negru.Min == 0 && TimpRamas.Negru.Sec == 0 {
+			Mat = true
+			Castigator = "B"
+			return
+		}
 	}
-	fmt.Println("Ai ramas fara timp!")
+
+	if !Mat && !Pat{
+		Cronometru()
+	}
 }
 
 // AfisarePatrateAtacate genereaza mutarile posibile pentru piesa din (x, y) si o memoreaza in Selected
@@ -154,7 +181,6 @@ func Mutare() {
 			VerifPat()
 		}
 
-		Changed = true
 	}
 }
 

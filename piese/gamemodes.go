@@ -29,8 +29,11 @@ func IncarcaNivel(nivel string) {
 	default:
 		initializareFisier(nivel)
 	}
-	// FIXME: Cronometru
-	// go cronometru()*/
+
+	TimpRamas.Alb.Min = 10
+	TimpRamas.Negru.Min = 10
+
+	go Cronometru()
 }
 
 // initializareMatriceRandomOglindit genereaza piesele aleatoare pt. tabla de joc

@@ -35,7 +35,7 @@ func (g *game) Update() error {
 		} else if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
 			_, _, mutare = piese.GetSquare()
 		}
-		
+
 		switch mutare {
 		// Schimba nivelul la stanga
 		case -1:
@@ -47,7 +47,6 @@ func (g *game) Update() error {
 		case 0:
 			piese.IncarcaNivel(piese.Nivele[selected])
 			piese.Started = true
-			piese.Changed = true
 
 		// Schimba nivelul la dreapta
 		case 1:
