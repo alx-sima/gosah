@@ -1,7 +1,6 @@
 package piese
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -33,7 +32,6 @@ func Cronometru() {
 	time.Sleep(time.Second)
 
 	if Turn == 'W' {
-		fmt.Printf("w: %v\n", TimpRamas)
 		if TimpRamas.Alb.Sec != 0 {
 			TimpRamas.Alb.Sec--
 		} else {
@@ -46,7 +44,6 @@ func Cronometru() {
 			return
 		}
 	} else {
-		fmt.Printf("b: %v\n", TimpRamas)
 		if TimpRamas.Negru.Sec != 0 {
 			TimpRamas.Negru.Sec--
 		} else {
@@ -60,7 +57,7 @@ func Cronometru() {
 		}
 	}
 
-	if !Mat && !Pat{
+	if !Mat && !Pat {
 		Cronometru()
 	}
 }
@@ -134,9 +131,6 @@ func Mutare() {
 				Board[x][y].Tip = 'Q'
 			}
 		}
-		// Stergere pozitia initial selectat
-		Board[Selected.X][Selected.Y] = Empty()
-		Selected = PozitiePiesa{}
 
 		// Reseteaza tabla de sah si de pozitii atacate
 		SahAlb, SahNegru = false, false
@@ -150,6 +144,10 @@ func Mutare() {
 				Board[x][y].EnPassant = true
 			}
 		}
+
+		// Stergere pozitia initial selectat
+		Board[Selected.X][Selected.Y] = Empty()
+		Selected = PozitiePiesa{}
 
 		// Ia pozitia regelui
 		if Board[x][y].Tip == 'K' {
@@ -180,7 +178,6 @@ func Mutare() {
 		if !Mat {
 			VerifPat()
 		}
-
 	}
 }
 
