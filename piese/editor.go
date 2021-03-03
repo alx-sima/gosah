@@ -1,72 +1,13 @@
 package piese
 
 import (
-	"encoding/json"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
-	"io/fs"
-	"io/ioutil"
-	"os"
 	"strings"
 )
 
-//data tine structura pentru fisierele .json
-type data struct {
-	// TODO: height retine inaltimea tablei
-	Height int `json:"height"`
-	// TODO: width retine latimea tablei
-	Width int `json:"width"`
-	//Tabla retine randurile tablei
-	Tabla []string `json:"tabla"`
-}
-
-// initializareFisier initializeaza nivele speciale din fisierul clasic.json
-func initializareFisier(fileName string) {
-	// Deschide fisierul si verifica daca e valid
-	f, _ := ioutil.ReadFile("nivele/" + fileName + ".json")
-	if !json.Valid(f) {
-		panic("fisierul este invalid")
-	}
-
-	// Desface fisierul
-	var niv data
-	if err := json.Unmarshal(f, &niv); err != nil {
-		panic(err)
-	}
-
-	// Parcurge rand cu rand fieldul Tabla
-	for i := 0; i < 8; i++ {
-		for j := 0; j < 8; j++ {
-			// Ia caracter cu caracter
-			chr := rune(niv.Tabla[i][j])
-			// Verifica daca e litera mica (inseamna ca e piesa neagra)
-			if strings.ToLower(string(chr)) == string(chr) {
-				generarePiesa(i, j, chr-'a'+'A', 'B')
-				// Altfel piesa alba
-			} else {
-				generarePiesa(i, j, chr, 'W')
-			}
-		}
-	}
-	// Initializat cu succes
-	return
-}
-
-// citireNivele cauta toate fisierele din folderul /nivele/ si le afiseaza fara extensia ".json"
-func citireNivele() (nivele []string) {
-	// Declaratii
-	nivele = append(nivele, "random")
-	files, _ := os.ReadDir("./nivele")
-
-	// Parcurge fisierele din "./nivele"
-	for _, f := range files {
-		numeFisier := strings.ReplaceAll(f.Name(), ".json", "")
-		nivele = append(nivele, numeFisier)
-	}
-
-	nivele = append(nivele, "editor")
-	return
-}
+// editor este functie asincrona care implementeaza modul de editare tabla de joc
+// game.Update trebuie ignorat pentru a nu fi conflicte
 func editor() {
 	// Default e pionul
 	tip := 'P'
@@ -96,7 +37,7 @@ func editor() {
 			tip = 'P'
 		}
 		// Daca apesi Ctrl+S salveaza si iese
-		if  inpututil.KeyPressDuration(ebiten.KeyControl) > 0 && inpututil.KeyPressDuration(ebiten.KeyS) > 0 {
+		if inpututil.KeyPressDuration(ebiten.KeyControl) > 0 && inpututil.KeyPressDuration(ebiten.KeyS) > 0 {
 			var tabla []string
 
 			for i := 0; i < 8; i++ {
@@ -120,21 +61,25 @@ func editor() {
 				tabla = append(tabla, rand)
 			}
 
-			// Printeaza informatiile in format json (indentat)
-			niv := data{8, 8, tabla}
-			text, _ := json.MarshalIndent(niv, "", "\t")
-			// TODO: alege numele fisierului cand salvezi
-			if err := os.WriteFile("nivele/custom.json", text, fs.ModePerm); err != nil{
-				panic(err)
-			}
-
-			// Inchide programul
-			os.Exit(0)
+			saveToJson(data{
+				Height: 8,
+				Width:  8,
+				Tabla:  tabla,
+			})
 		}
 
 		// Click-stanga pune piese albe
 		if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
 			if x, y, err := GetSquare(); err == 0 {
+				// Daca piesa va da override la regele alb, il sterge din RegeAlb
+				if x == RegeAlb.X && y == RegeAlb.Y {
+					RegeAlb = PozitiePiesa{}
+				}
+				// Analog pt regele negru
+				if x == RegeNegru.X && y == RegeNegru.Y {
+					RegeNegru = PozitiePiesa{}
+				}
+
 				if RegeAlb.Ref == nil || tip != 'K' {
 					generarePiesa(x, y, tip, 'W')
 				}
@@ -145,6 +90,15 @@ func editor() {
 		// Click-dreapta pune piese negre
 		if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonRight) {
 			if x, y, err := GetSquare(); err == 0 {
+				// Daca piesa va da override la regele alb, il sterge din RegeAlb
+				if x == RegeAlb.X && y == RegeAlb.Y {
+					RegeAlb = PozitiePiesa{}
+				}
+				// Analog pt regele negru
+				if x == RegeNegru.X && y == RegeNegru.Y {
+					RegeNegru = PozitiePiesa{}
+				}
+
 				if RegeNegru.Ref == nil || tip != 'K' {
 					generarePiesa(x, y, tip, 'B')
 				}

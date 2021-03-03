@@ -56,7 +56,7 @@ var (
 	Castigator string
 	// Stare retine daca meciul e in sah sau pat
 	Stare int
-	//
+	// TimpRamas retine timpul ramas pentru fiecare jucator
 	TimpRamas struct {
 		Alb struct {
 			Min int
@@ -67,4 +67,10 @@ var (
 			Sec int
 		}
 	}
+	// Miscari retine toate miscarile efectuate de jucatori
+	Miscari struct {
+		Negru []string
+		Alb []string
+	}
+	// Miscari.Negru = append(Miscari.Negru, miscare)
 )

@@ -30,10 +30,12 @@ func IncarcaNivel(nivel string) {
 		initializareFisier(nivel)
 	}
 
-	TimpRamas.Alb.Min = 10
-	TimpRamas.Negru.Min = 10
-
-	go Cronometru()
+	// Daca nivelul e editor, cronometrul nu incepe
+	if nivel != "editor" {
+		TimpRamas.Alb.Min = 10
+		TimpRamas.Negru.Min = 10
+		go Cronometru()
+	}
 }
 
 // initializareMatriceRandomOglindit genereaza piesele aleatoare pt. tabla de joc

@@ -1,5 +1,5 @@
 # Default ignored files
-/shelf/
+/.idea/shelf/
 /.idea/workspace.xml
 # Datasource local storage ignored files
 /../../../../../../../:\Users\alexs\go\src\gosah\.idea/dataSources/
@@ -8,6 +8,7 @@
 /httpRequests/
 
 # User-added
-/idea/
+/.idea/
+/.vscode/
 *.exe
 __debug_bin

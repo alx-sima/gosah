@@ -5,10 +5,6 @@
 * cauta nivel.json
 * daca nu exista, genereaza piesele la intamplare
 ---
-## TODO: 
-- [x] implementat sah
-- [x] implementat pat
----
 linkuri utile: https://ro.wikipedia.org/wiki/Regulile_jocului_de_%C8%99ah
 
 Proiect realizat de: 

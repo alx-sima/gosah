@@ -1,4 +1,4 @@
-package main
+package game
 
 import (
 	"fmt"
@@ -11,7 +11,7 @@ import (
 // Draw draws the game screen.
 // Draw is called every frame typically 1/60[s] for 60Hz display).
 func (g *game) Draw(screen *ebiten.Image) {
-	// FIXME: tremura ecranul cand misti
+	// FIXME: LAG
 	// Initializare piese
 	square := ebiten.NewImage(piese.L, piese.L)
 	opts := &ebiten.DrawImageOptions{}
@@ -110,7 +110,8 @@ func (g *game) Draw(screen *ebiten.Image) {
 			(piese.Width-ofsx)/2, (piese.Height-ofsy)/2,
 			color.RGBA{R: 255, G: 69, B: 0, A: 255})
 		return
-	} else if piese.Started {
+		// Cronometrul se afiseaza cand jocul e pornit, dar nu in editor
+	} else if piese.Started && !piese.Editing {
 		// Deseneaza fundalul timerului
 		rect := ebiten.NewImage(piese.Offset, 2*piese.L)
 		opts := &ebiten.DrawImageOptions{}
@@ -122,9 +123,9 @@ func (g *game) Draw(screen *ebiten.Image) {
 		screen.DrawImage(rect, opts)
 
 		timp := fmt.Sprintf("%02d:%02d", piese.TimpRamas.Negru.Min, piese.TimpRamas.Negru.Sec)
-		text.Draw(screen, timp, bigFont, 0, 4 * piese.L / 3, color.White)
+		text.Draw(screen, timp, bigFont, 0, 4*piese.L/3, color.White)
 
 		timp = fmt.Sprintf("%02d:%02d", piese.TimpRamas.Alb.Min, piese.TimpRamas.Alb.Sec)
-		text.Draw(screen, timp, bigFont, 0, 22 * piese.L / 3, color.White)
+		text.Draw(screen, timp, bigFont, 0, 22*piese.L/3, color.White)
 	}
 }
