@@ -51,21 +51,23 @@ func (p *Piesa) miscareRege(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
 func (p *Piesa) miscarePion(tabla *[8][8]Piesa, x, y int, mutare, isSah, ok bool) {
 	var dy = []int{y - 1, y, y + 1}
 	if ok {
-		if Turn == 'W' {
-			if tabla[x+1][y-1].Tip == 'P' && tabla[x+1][y+1].Tip == 'P' && tabla[x+1][y-1].Culoare == tabla[x+1][y+1].Culoare {
-				pieseAtacaPatrat.nr = 2
-				pieseAtacaPatrat.col[1] = x + 1
-				pieseAtacaPatrat.lin[1] = y - 1
-				pieseAtacaPatrat.col[2] = x + 1
-				pieseAtacaPatrat.lin[2] = y + 1
-			}
-		} else {
-			if tabla[x-1][y-1].Tip == 'P' && tabla[x-1][y+1].Tip == 'P' && tabla[x-1][y-1].Culoare == tabla[x-1][y+1].Culoare {
-				pieseAtacaPatrat.nr = 2
-				pieseAtacaPatrat.col[1] = x - 1
-				pieseAtacaPatrat.lin[1] = y - 1
-				pieseAtacaPatrat.col[2] = x - 1
-				pieseAtacaPatrat.lin[2] = y + 1
+		if verifInBound(y+1, y-1) {
+			if Turn == 'W' {
+				if tabla[x+1][y-1].Tip == 'P' && tabla[x+1][y+1].Tip == 'P' && tabla[x][y].Culoare != Turn && tabla[x+1][y-1].Culoare == tabla[x+1][y+1].Culoare {
+					pieseAtacaPatrat.nr = 2
+					pieseAtacaPatrat.col = append(pieseAtacaPatrat.col, x + 1)
+					pieseAtacaPatrat.lin = append(pieseAtacaPatrat.col, y - 1)
+					pieseAtacaPatrat.col = append(pieseAtacaPatrat.col, x + 1)
+					pieseAtacaPatrat.lin = append(pieseAtacaPatrat.col, y + 1)
+				}
+			} else {
+				if tabla[x-1][y-1].Tip == 'P' && tabla[x-1][y+1].Tip == 'P' && tabla[x][y].Culoare != Turn && tabla[x-1][y-1].Culoare == tabla[x-1][y+1].Culoare {
+					pieseAtacaPatrat.nr = 2
+					pieseAtacaPatrat.col = append(pieseAtacaPatrat.col, x - 1)
+					pieseAtacaPatrat.lin = append(pieseAtacaPatrat.col, y - 1)
+					pieseAtacaPatrat.col = append(pieseAtacaPatrat.col, x - 1)
+					pieseAtacaPatrat.lin = append(pieseAtacaPatrat.col, y + 1)
+				}
 			}
 		}
 	} else {
@@ -243,10 +245,14 @@ func (p *Piesa) miscareNebun(tabla *[8][8]Piesa, x, y int, mutare, isSah, ok, eR
 			if verifInBound(m, n) {
 				// Verificam daca sunt mai multe piese de acelasi tip(si culoare) care ataca acelasi patrat
 				if ok {
-					if (tabla[m][n].Tip == 'B' || (eRegina && tabla[m][n].Tip == 'Q')) && tabla[m][n].Culoare == Turn {
-						pieseAtacaPatrat.nr++
-						pieseAtacaPatrat.col = append(pieseAtacaPatrat.col, m)
-						pieseAtacaPatrat.lin = append(pieseAtacaPatrat.lin, n)
+					if tabla[m][n].Tip != 0 {
+						if ((tabla[m][n].Tip == 'B' && !eRegina) || (eRegina && tabla[m][n].Tip == 'Q')) && tabla[m][n].Culoare == Turn {
+							pieseAtacaPatrat.nr++
+							pieseAtacaPatrat.col = append(pieseAtacaPatrat.col, m)
+							pieseAtacaPatrat.lin = append(pieseAtacaPatrat.lin, n)
+						} else {
+							break
+						}
 					}
 				} else {
 					if mutare && !isSah {
@@ -309,10 +315,14 @@ func (p *Piesa) miscareCal(tabla *[8][8]Piesa, x, y int, mutare, isSah, ok bool)
 		if verifInBound(m, n) {
 			// Verificam daca sunt mai multe piese de acelasi tip(si culoare) care ataca acelasi patrat
 			if ok {
-				if tabla[m][n].Tip == 'N' && tabla[m][n].Culoare == Turn {
-					pieseAtacaPatrat.nr++
-					pieseAtacaPatrat.col = append(pieseAtacaPatrat.col, m)
-					pieseAtacaPatrat.lin = append(pieseAtacaPatrat.lin, n)
+				if tabla[m][n].Tip != 0 {
+					if tabla[m][n].Tip == 'N' && tabla[m][n].Culoare == Turn {
+						pieseAtacaPatrat.nr++
+						pieseAtacaPatrat.col = append(pieseAtacaPatrat.col, m)
+						pieseAtacaPatrat.lin = append(pieseAtacaPatrat.lin, n)
+					} else {
+						break
+					}
 				}
 			} else {
 
@@ -357,10 +367,14 @@ func (p *Piesa) miscareTura(tabla *[8][8]Piesa, x, y int, mutare, isSah, ok, eRe
 			if verifInBound(m, n) {
 				// Verificam daca sunt mai multe piese de acelasi tip(si culoare) care ataca acelasi patrat
 				if ok {
-					if (tabla[m][n].Tip == 'R' || (eRegina && tabla[m][n].Tip == 'Q')) && tabla[m][n].Culoare == Turn {
-						pieseAtacaPatrat.nr++
-						pieseAtacaPatrat.col = append(pieseAtacaPatrat.col, m)
-						pieseAtacaPatrat.lin = append(pieseAtacaPatrat.lin, n)
+					if tabla[m][n].Tip != 0 {
+						if ((tabla[m][n].Tip == 'R' && !eRegina) || (eRegina && tabla[m][n].Tip == 'Q')) && tabla[m][n].Culoare == Turn {
+							pieseAtacaPatrat.nr++
+							pieseAtacaPatrat.col = append(pieseAtacaPatrat.col, m)
+							pieseAtacaPatrat.lin = append(pieseAtacaPatrat.lin, n)
+						} else {
+							break
+						}
 					}
 				} else {
 					if mutare && !isSah {

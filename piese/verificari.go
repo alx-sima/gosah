@@ -77,7 +77,7 @@ func VerifPat() {
 				if ramaseAlbe.piese['B'] == 0 || ramaseNegre.piese['B'] == 0 {
 					Pat = false
 				}
-				if Pat == true {
+				if Pat {
 					culoare := 0 // culoare reprezinta culoarea patratului pe care se afla nebunul
 					for i := 0; i < 8; i++ {
 						for j := 0; j < 8; j++ {
@@ -108,7 +108,7 @@ func VerifPat() {
 			}
 		}
 		// Daca nu exista misari legale posibile, meciul se termina in sah mat
-		if Pat == false {
+		if !Pat {
 			existaMutare = false
 			for i := 0; i < 8 && !existaMutare; i++ {
 				for j := 0; j < 8 && !existaMutare; j++ {
@@ -117,7 +117,14 @@ func VerifPat() {
 					}
 				}
 			}
-			if existaMutare == false {
+			if !existaMutare {
+				Pat = true
+			}
+		}
+	}
+	if !Pat && len(Miscari.Negru) >= 4 {
+		if Miscari.Alb[len(Miscari.Alb) - 1] == Miscari.Alb[len(Miscari.Alb) - 3] && Miscari.Alb[len(Miscari.Alb) - 2] == Miscari.Alb[len(Miscari.Alb) - 4] {
+			if Miscari.Negru[len(Miscari.Negru) - 1] == Miscari.Negru[len(Miscari.Negru) - 3] && Miscari.Negru[len(Miscari.Negru) - 2] == Miscari.Negru[len(Miscari.Negru) - 4] {
 				Pat = true
 			}
 		}

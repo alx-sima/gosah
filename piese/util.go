@@ -71,10 +71,17 @@ func AfisarePatrateAtacate(x, y int) {
 	}
 }
 
+func adaugareMutare(rezultat string) {
+	if Turn == 'W' {
+		Miscari.Alb = append(Miscari.Alb, rezultat)
+	} else {
+		Miscari.Negru = append(Miscari.Negru, rezultat)
+	}
+}
+
 // Mutare muta piesa selectata pe pozitia ceruta
 func Mutare() {
 	if x, y, err := GetSquare(); err == 0 && Board[x][y].Atacat {
-		var ultimaMutare string
 		if Board[x][y].Tip != 0 {
 			if Turn == 'W' {
 				ramaseNegre.edit(Board[x][y].Tip, +1)
@@ -95,13 +102,13 @@ func Mutare() {
 			// In dreapta
 			if y-selected.Y == 2 {
 				Board[x][y-1], Board[x][y+1] = Board[x][y+1], Board[x][y-1]
-				ultimaMutare = "O-O"
+				adaugareMutare("O-O")
 				// In stanga
 			} else if selected.Y-y == 2 {
 				Board[x][y+1], Board[x][y-2] = Board[x][y-2], Board[x][y+1]
-				ultimaMutare = "O-O-O"
+				adaugareMutare("O-O-O")
 			} else {
-				ultimaMutare = numire(mutariUltimaCapturare == 0, selected.X, selected.Y, x, y, Board[x][y].Tip, 0)
+				adaugareMutare(numire(mutariUltimaCapturare == 0, selected.X, selected.Y, x, y, Board[x][y].Tip, 0))
 			}
 			// IMPORTANT! aceasta verificare pentru pion trebuie facuta inainte de clear
 			// Daca piesa captureaza prin en passant, elimina piesa capturata de pe tabla
@@ -125,12 +132,12 @@ func Mutare() {
 				Board[x][y].Tip = 'Q'
 			}
 			if Board[x][y].Tip == 'P' {
-				ultimaMutare = numire(mutariUltimaCapturare == 0, selected.X, selected.Y, x, y, 'P', 0)
+				adaugareMutare(numire(mutariUltimaCapturare == 0, selected.X, selected.Y, x, y, 'P', 0))
 			} else {
-				ultimaMutare = numire(mutariUltimaCapturare == 0, selected.X, selected.Y, x, y, 'P', Board[x][y].Tip)
+				adaugareMutare(numire(mutariUltimaCapturare == 0, selected.X, selected.Y, x, y, 'P', Board[x][y].Tip))
 			}
 		} else {
-			ultimaMutare = numire(mutariUltimaCapturare == 0, selected.X, selected.Y, x, y, Board[x][y].Tip, 0)
+			adaugareMutare(numire(mutariUltimaCapturare == 0, selected.X, selected.Y, x, y, Board[x][y].Tip, 0))
 		}
 
 		// Reseteaza tabla de sah si de pozitii atacate
@@ -181,10 +188,22 @@ func Mutare() {
 		}
 
 		if Mat {
-			ultimaMutare += "#"
+			if Turn == 'W' {
+				Miscari.Alb[len(Miscari.Alb)] += "#"
+			} else {
+				Miscari.Negru[len(Miscari.Negru)] += "#"
+			}
 		} else if SahNegru || SahAlb {
-			ultimaMutare += "+"
+			if Turn == 'W' {
+				Miscari.Alb[len(Miscari.Alb)] += "+"
+			} else {
+				Miscari.Negru[len(Miscari.Negru)] += "+"
+			}
 		}
-		fmt.Println(ultimaMutare)
+
+		if len(Miscari.Negru) == len(Miscari.Alb) {
+			fmt.Println(fmt.Sprintf("%d", len(Miscari.Alb)) + " " + Miscari.Alb[len(Miscari.Alb) - 1] + " " + Miscari.Negru[len(Miscari.Negru) - 1])
+		}
+
 	}
 }

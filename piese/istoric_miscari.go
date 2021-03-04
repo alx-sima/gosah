@@ -2,10 +2,12 @@ package piese
 
 import "fmt"
 
+// transforma x din int in litera corespunzatoare coloanei
 func transform(x int) string {
 	return fmt.Sprintf("%c", 'a'+x)
 }
 
+// verifica daca exista mai multe piese de acelasi tip care pot ajunge in acelasi patrat
 func verifPieseAtacaAcelasiPatrat(x, y int, piesa rune) {
 	pieseAtacaPatrat.nr = 0
 	pieseAtacaPatrat.lin = []int{}
@@ -34,10 +36,14 @@ func numire(capturare bool, x, y, m, n int, piesa, promotion rune) (rezultat str
 	m++
 	x++
 
+	// mutarile pionilor nu au prefix cu piesa mutata
 	if piesa != 'P' {
 		rezultat += string(piesa)
+	} else if capturare {
+		rezultat += transform(y)
 	}
 
+	// daca mai multe piese de acelasi tip pot ajunge in patratul selectat, adaugam linia, coloana sau ambele a piesei mutate
 	verifPieseAtacaAcelasiPatrat(m - 1, n, piesa)
 	if pieseAtacaPatrat.nr > 1 {
 		var linSame, colSame bool
@@ -51,21 +57,24 @@ func numire(capturare bool, x, y, m, n int, piesa, promotion rune) (rezultat str
 				}
 			}
 		}
-		if linSame || !(colSame || linSame) {
+		if colSame || !(colSame || linSame) {
 			rezultat += transform(y)
 		}
-		if colSame {
+		if linSame {
 			rezultat += fmt.Sprintf("%d", x)
 		}
 	}
 
+	// capturarea este reprezentata prin x
 	if capturare {
 		rezultat += "x"
 	}
 
+	// adaugam pozitia in care ajunge piesa
 	rezultat += transform(n)
 	rezultat += fmt.Sprintf("%d", m)
 
+	// daca piesa este pion si ajunge pe ultima coloana adauga in ce a promovat
 	if promotion != 0 {
 		rezultat += "="
 		rezultat += string(promotion)
