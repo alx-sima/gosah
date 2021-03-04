@@ -12,7 +12,7 @@ import (
 // Draw is called every frame typically 1/60[s] for 60Hz display).
 func (g *game) Draw(screen *ebiten.Image) {
 	// FIXME: LAG
-	// Initializare piese
+	// Initializare patrate
 	square := ebiten.NewImage(piese.L, piese.L)
 	opts := &ebiten.DrawImageOptions{}
 
@@ -127,5 +127,30 @@ func (g *game) Draw(screen *ebiten.Image) {
 
 		timp = fmt.Sprintf("%02d:%02d", piese.TimpRamas.Alb.Min, piese.TimpRamas.Alb.Sec)
 		text.Draw(screen, timp, bigFont, 0, 22*piese.L/3, color.White)
+	}
+
+	// afiseaza piesa selectata (in editor)
+	if piese.Editing {
+		newPiesa := piese.NewPiesa(piese.TipSelectat, 'W')
+		img := newPiesa.DrawPiece()
+		if img != nil {
+			opts := &ebiten.DrawImageOptions{}
+			opts.GeoM.Translate(0, 7*piese.L)
+
+			screen.DrawImage(img, opts)
+		}
+	}
+
+	// Deseneaza help text-ul daca piese.helping e apasat.
+	// Daca nu, afiseaza in dreapta jos ce tasta trebuie apasata pt help
+	if helping {
+		screen.Fill(color.RGBA{R: 100, G: 100, B: 100, A: 100})
+
+		text.Draw(screen, helpText, textFont, 100, 100, color.White)
+	} else {
+		helpText := "h - help "
+		w := text.BoundString(smallFont, helpText).Dx()
+		h := text.BoundString(smallFont, helpText).Dy()
+		text.Draw(screen, helpText, smallFont, piese.Width - w, piese.Height - h, color.White)
 	}
 }

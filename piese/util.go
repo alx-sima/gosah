@@ -1,6 +1,7 @@
 package piese
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -62,63 +63,56 @@ func Cronometru() {
 	}
 }
 
-// AfisarePatrateAtacate genereaza mutarile posibile pentru piesa din (x, y) si o memoreaza in Selected
+// AfisarePatrateAtacate genereaza mutarile posibile pentru piesa din (x, y) si o memoreaza in selected
 func AfisarePatrateAtacate(x, y int) {
 	if Board[x][y].Culoare == Turn {
-		Board[x][y].Move(&Board, x, y, true, SahNegru || SahAlb)
-		Selected = PozitiePiesa{Ref: &Board[x][y], X: x, Y: y}
+		Board[x][y].Move(&Board, x, y, true, SahNegru || SahAlb, false)
+		selected = PozitiePiesa{Ref: &Board[x][y], X: x, Y: y}
 	}
 }
 
 // Mutare muta piesa selectata pe pozitia ceruta
 func Mutare() {
 	if x, y, err := GetSquare(); err == 0 && Board[x][y].Atacat {
-
+		var ultimaMutare string
 		if Board[x][y].Tip != 0 {
 			if Turn == 'W' {
-				for i := 0; i < len(PieseNegre); i++ {
-					if Board[x][y].Tip == PieseNegre[i] {
-						PieseNegre = remove(PieseNegre, i)
-						break
-					}
-				}
+				ramaseNegre.edit(Board[x][y].Tip, +1)
 			} else {
-				for i := 0; i < len(PieseAlbe); i++ {
-					if Board[x][y].Tip == PieseAlbe[i] {
-						PieseAlbe = remove(PieseAlbe, i)
-						break
-					}
-				}
+				ramaseAlbe.edit(Board[x][y].Tip, +1)
 			}
-			MutariUltimaCapturare = 0
+			mutariUltimaCapturare = 0
 		} else {
-			MutariUltimaCapturare++
+			mutariUltimaCapturare++
 		}
 
 		// Translateaza piesa din selected pe pozitia (x, y)
-		Board[x][y] = *Selected.Ref
+		Board[x][y] = *selected.Ref
 		Board[x][y].Mutat = true
 
 		// Verifica daca mutarea provoaca o rocada
 		if Board[x][y].Tip == 'K' {
 			// In dreapta
-			if y-Selected.Y == 2 {
+			if y-selected.Y == 2 {
 				Board[x][y-1], Board[x][y+1] = Board[x][y+1], Board[x][y-1]
+				ultimaMutare = "O-O"
 				// In stanga
-			} else if Selected.Y-y == 2 {
+			} else if selected.Y-y == 2 {
 				Board[x][y+1], Board[x][y-2] = Board[x][y-2], Board[x][y+1]
+				ultimaMutare = "O-O-O"
+			} else {
+				ultimaMutare = numire(mutariUltimaCapturare == 0, selected.X, selected.Y, x, y, Board[x][y].Tip, 0)
 			}
-		}
-		// IMPORTANT! aceasta verificare pentru pion trebuie facuta inainte de clear
-		// Daca piesa captureaza prin en passant, elimina piesa capturata de pe tabla
-		if Board[x][y].Tip == 'P' {
+			// IMPORTANT! aceasta verificare pentru pion trebuie facuta inainte de clear
+			// Daca piesa captureaza prin en passant, elimina piesa capturata de pe tabla
+		} else if Board[x][y].Tip == 'P' {
 			if verifInBound(x-1, y) {
-				if Board[x-1][y].EnPassant && Selected.X-x == -1 && (Selected.Y-y == 1 || Selected.Y-y == -1) {
+				if Board[x-1][y].EnPassant && selected.X-x == -1 && (selected.Y-y == 1 || selected.Y-y == -1) {
 					Board[x-1][y] = Empty()
 				}
 			}
 			if verifInBound(x+1, y) {
-				if Board[x+1][y].EnPassant && Selected.X-x == 1 && (Selected.Y-y == 1 || Selected.Y-y == -1) {
+				if Board[x+1][y].EnPassant && selected.X-x == 1 && (selected.Y-y == 1 || selected.Y-y == -1) {
 					Board[x+1][y] = Empty()
 				}
 			}
@@ -130,6 +124,13 @@ func Mutare() {
 			if Board[x][y].Culoare == 'B' && x == 7 {
 				Board[x][y].Tip = 'Q'
 			}
+			if Board[x][y].Tip == 'P' {
+				ultimaMutare = numire(mutariUltimaCapturare == 0, selected.X, selected.Y, x, y, 'P', 0)
+			} else {
+				ultimaMutare = numire(mutariUltimaCapturare == 0, selected.X, selected.Y, x, y, 'P', Board[x][y].Tip)
+			}
+		} else {
+			ultimaMutare = numire(mutariUltimaCapturare == 0, selected.X, selected.Y, x, y, Board[x][y].Tip, 0)
 		}
 
 		// Reseteaza tabla de sah si de pozitii atacate
@@ -140,14 +141,14 @@ func Mutare() {
 		if Board[x][y].Tip == 'P' {
 
 			// Daca pionul s-a mutat 2 patratele, retine ca e apt pt. en passant
-			if Selected.X-x == 2 || Selected.X-x == -2 {
+			if selected.X-x == 2 || selected.X-x == -2 {
 				Board[x][y].EnPassant = true
 			}
 		}
 
 		// Stergere pozitia initial selectat
-		Board[Selected.X][Selected.Y] = Empty()
-		Selected = PozitiePiesa{}
+		Board[selected.X][selected.Y] = Empty()
+		selected = PozitiePiesa{}
 
 		// Ia pozitia regelui
 		if Board[x][y].Tip == 'K' {
@@ -178,10 +179,12 @@ func Mutare() {
 		if !Mat {
 			VerifPat()
 		}
-	}
-}
 
-// remove ia sliceul slice si returneaza un nou slice, fara elementul de la pozitia s
-func remove(slice []rune, s int) []rune {
-	return append(slice[:s], slice[s+1:]...)
+		if Mat {
+			ultimaMutare += "#"
+		} else if SahNegru || SahAlb {
+			ultimaMutare += "+"
+		}
+		fmt.Println(ultimaMutare)
+	}
 }

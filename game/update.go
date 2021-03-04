@@ -16,6 +16,12 @@ func (g *game) Update() error {
 	if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
 		os.Exit(0)
 	}
+	if inpututil.IsKeyJustPressed(ebiten.KeyH) {
+		helping = !helping
+		if helping {
+			updateHelpText()
+		}
+	}
 
 	// Daca jocul nu este inceput, se selecteaza nivelul
 	if !piese.Started {

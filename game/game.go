@@ -8,8 +8,10 @@ import (
 )
 
 var (
-	selected          int
-	textFont, bigFont font.Face
+	helping                      bool
+	helpText string
+	selected                     int
+	smallFont, textFont, bigFont font.Face
 )
 
 // initializare font
@@ -20,6 +22,11 @@ func init() {
 	}
 
 	const dpi = 72
+	smallFont, err = opentype.NewFace(tt, &opentype.FaceOptions{
+		Size:    36,
+		DPI:     dpi,
+		Hinting: font.HintingFull,
+	})
 	textFont, err = opentype.NewFace(tt, &opentype.FaceOptions{
 		Size:    72,
 		DPI:     dpi,

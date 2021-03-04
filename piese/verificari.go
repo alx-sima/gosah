@@ -13,7 +13,7 @@ func verifIesireSah(tabla *[8][8]Piesa, x, y, m, n int) {
 	}
 }
 
-// verifSah verifica daca mutarea piesei alee din patratul x, y in patratul m, n scoate regele din sah. Returneaza true daca ramane in sah, false daca iese din sah
+// verifSah verifica daca mutarea piesei alese din patratul x, y in patratul m, n scoate regele din sah. Returneaza true daca ramane in sah, false daca iese din sah
 func verifSah(tabla *[8][8]Piesa, x, y, m, n int) bool {
 	// Muta piesa pe patratul (m, n) (temporar)
 	piesa, culoare, ok := tabla[m][n].Tip, tabla[m][n].Culoare, false
@@ -66,22 +66,19 @@ func verifSah(tabla *[8][8]Piesa, x, y, m, n int) bool {
 // VerifPat verifica toate conditiile de egalitate, stabilind daca jocul mai poate continua
 func VerifPat() {
 	// Daca dup 50 de miscari (alb + negru) nu se captureaza nicio piesa, meciul se termina in egal
-	if MutariUltimaCapturare == 100 {
+	if mutariUltimaCapturare == 100 {
 		Pat = true
 	} else {
-		// Daca nu xista material suficient pentru sah mat, meciul se termina in egal
-		if len(PieseAlbe) <= 2 && len(PieseNegre) <= 2 {
+		// Daca nu exista material suficient pentru sah mat, meciul se termina in egal
+		if ramaseAlbe.nr <= 2 && ramaseNegre.nr <= 2 {
 			Pat = true
-			// Cazul Rege + Nebun vs ege + Nebun. Daca nebunii se afla pe patrate de aceeasi culoare meciul se termina in egal
-			if len(PieseAlbe) == len(PieseNegre) && len(PieseNegre) == 2 {
-				for i := 0; i < 2; i++ {
-					if PieseAlbe[i] != 'K' && PieseAlbe[i] != 'B' && PieseNegre[i] != 'K' && PieseNegre[i] != 'B' {
-						Pat = false
-						break
-					}
+			// Cazul Rege + Nebun vs Rege + Nebun. Daca nebunii se afla pe patrate de aceeasi culoare meciul se termina in egal
+			if ramaseAlbe.nr == ramaseNegre.nr && ramaseNegre.nr == 2 {
+				if ramaseAlbe.piese['B'] == 0 || ramaseNegre.piese['B'] == 0 {
+					Pat = false
 				}
 				if Pat == true {
-					culoare := 0 // culoare rprezinta culoarea patratului pe care se afla nebunul
+					culoare := 0 // culoare reprezinta culoarea patratului pe care se afla nebunul
 					for i := 0; i < 8; i++ {
 						for j := 0; j < 8; j++ {
 							if Board[i][j].Tip == 'B' {
@@ -102,15 +99,11 @@ func VerifPat() {
 				}
 				// Verifica celelalte 3 cazuri de insuficiena: Rege vs Rege, Rege + Cal vs Rege, Rege + Nebun vs Rege
 			} else {
-				for i := 0; i < len(PieseAlbe) && Pat; i++ {
-					if PieseAlbe[i] != 'K' && PieseAlbe[i] != 'N' && PieseAlbe[i] != 'B' {
-						Pat = false
-					}
+				if ramaseAlbe.piese['N'] == 0 && ramaseAlbe.piese['B'] == 0 && ramaseAlbe.nr == 2{
+					Pat = false
 				}
-				for i := 0; i < len(PieseNegre) && Pat; i++ {
-					if PieseNegre[i] != 'K' && PieseNegre[i] != 'N' && PieseNegre[i] != 'B' {
-						Pat = false
-					}
+				if ramaseNegre.piese['N'] == 0 && ramaseNegre.piese['B'] == 0 && ramaseNegre.nr == 2{
+					Pat = false
 				}
 			}
 		}
@@ -120,7 +113,7 @@ func VerifPat() {
 			for i := 0; i < 8 && !existaMutare; i++ {
 				for j := 0; j < 8 && !existaMutare; j++ {
 					if Board[i][j].Culoare == Turn {
-						Board[i][j].Move(&Board, i, j, false, true)
+						Board[i][j].Move(&Board, i, j, false, true, false)
 					}
 				}
 			}
@@ -147,7 +140,7 @@ func verifMat(culoare rune) {
 	for i := 0; i < 8 && Mat; i++ {
 		for j := 0; j < 8 && Mat; j++ {
 			if Board[i][j].Culoare == culoare {
-				Board[i][j].Move(&Board, i, j, false, true)
+				Board[i][j].Move(&Board, i, j, false, true, false)
 			}
 		}
 	}

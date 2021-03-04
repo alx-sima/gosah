@@ -1,6 +1,7 @@
 package piese
 
 import (
+	"fmt"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"strings"
@@ -36,8 +37,16 @@ func editor() {
 		if inpututil.IsKeyJustPressed(ebiten.KeyP) {
 			tip = 'P'
 		}
+		// Salveaza global tipul selectat
+		TipSelectat = tip
+
 		// Daca apesi Ctrl+S salveaza si iese
 		if inpututil.KeyPressDuration(ebiten.KeyControl) > 0 && inpututil.KeyPressDuration(ebiten.KeyS) > 0 {
+			// Verifica daca nivelul in starea curenta e valid
+			if !checkSave() {
+				continue
+			}
+
 			var tabla []string
 
 			for i := 0; i < 8; i++ {
@@ -71,33 +80,18 @@ func editor() {
 		// Click-stanga pune piese albe
 		if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
 			if x, y, err := GetSquare(); err == 0 {
-				// Daca piesa va da override la regele alb, il sterge din RegeAlb
-				if x == RegeAlb.X && y == RegeAlb.Y {
-					RegeAlb = PozitiePiesa{}
-				}
-				// Analog pt regele negru
-				if x == RegeNegru.X && y == RegeNegru.Y {
-					RegeNegru = PozitiePiesa{}
-				}
+				deletePiesa(x, y)
 
 				if RegeAlb.Ref == nil || tip != 'K' {
 					generarePiesa(x, y, tip, 'W')
 				}
-
 			}
 		}
 
 		// Click-dreapta pune piese negre
 		if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonRight) {
 			if x, y, err := GetSquare(); err == 0 {
-				// Daca piesa va da override la regele alb, il sterge din RegeAlb
-				if x == RegeAlb.X && y == RegeAlb.Y {
-					RegeAlb = PozitiePiesa{}
-				}
-				// Analog pt regele negru
-				if x == RegeNegru.X && y == RegeNegru.Y {
-					RegeNegru = PozitiePiesa{}
-				}
+				deletePiesa(x, y)
 
 				if RegeNegru.Ref == nil || tip != 'K' {
 					generarePiesa(x, y, tip, 'B')
@@ -108,15 +102,41 @@ func editor() {
 		// Click-rotita sterge piese
 		if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonMiddle) {
 			if x, y, err := GetSquare(); err == 0 {
-				if Board[x][y].Tip == 'K' {
-					if Board[x][y].Culoare == 'W' {
-						RegeAlb = PozitiePiesa{}
-					} else {
-						RegeNegru = PozitiePiesa{}
-					}
-				}
-				Board[x][y] = Empty()
+				deletePiesa(x, y)
 			}
 		}
 	}
+}
+
+// deletePiesa sterge piesa de pe pozitia x, y
+func deletePiesa(x, y int) {
+	if Board[x][y].Culoare == 'W' {
+		ramaseAlbe.edit(Board[x][y].Tip, -1)
+		if Board[x][y].Tip == 'K' {
+			RegeAlb = PozitiePiesa{}
+		}
+	} else {
+		ramaseNegre.edit(Board[x][y].Tip, -1)
+		if Board[x][y].Tip == 'K' {
+			RegeNegru = PozitiePiesa{}
+		}
+	}
+	Board[x][y] = Empty()
+}
+
+// checkSave verifica daca nivelul este valid pt salvare
+func checkSave() bool {
+	// Trebuie sa existe ambii regi
+	if RegeAlb.Ref == nil || RegeNegru.Ref == nil {
+		fmt.Println("nu se poate salva: nu exista ambii regi")
+		return false
+	}
+	// Trebuie sa nu fie pat
+	if VerifPat(); Pat {
+		fmt.Println("nu se poate salva: pat")
+		return false
+	}
+	// FIXME
+	// Trebuie sa nu fie mat
+	return true
 }

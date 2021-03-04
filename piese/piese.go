@@ -14,7 +14,7 @@ import (
 
 // Piesa tine informatii despre un patrat de pe tabla
 type Piesa struct {
-	// Atacat retine daca in acel patrat poate ajunge piesa selectata (util.Selected)
+	// Atacat retine daca in acel patrat poate ajunge piesa selectata (util.selected)
 	Atacat bool
 	// Mutat retine daca piesa a fost mutata pana acum
 	Mutat bool
@@ -34,6 +34,11 @@ type PozitiePiesa struct {
 	Ref *Piesa
 	// Pozitia piesei pe tabla
 	X, Y int
+}
+
+func init() {
+	ramaseAlbe.piese = make(map[rune]int)
+	ramaseNegre.piese = make(map[rune]int)
 }
 
 /// Constructori
@@ -66,12 +71,12 @@ func generarePiesa(i, j int, tip, culoare rune) {
 	}
 	Board[i][j] = NewPiesa(tip, culoare)
 	if culoare == 'W' {
-		PieseAlbe = append(PieseAlbe, tip)
+		ramaseAlbe.edit(tip, +1)
 		if tip == 'K' {
 			RegeAlb = PozitiePiesa{&Board[i][j], i, j}
 		}
 	} else {
-		PieseNegre = append(PieseNegre, tip)
+	ramaseNegre.edit(tip, +1)
 		if tip == 'K' {
 			RegeNegru = PozitiePiesa{&Board[i][j], i, j}
 		}
@@ -93,7 +98,7 @@ func loadImageFromBytes(octeti []byte) *ebiten.Image {
 func (p *Piesa) DrawPiece() *ebiten.Image {
 	if !Started {
 		return nil
-	} 
+	}
 	switch p.Tip {
 	case 'K':
 		if p.Culoare == 'W' {
@@ -131,20 +136,20 @@ func (p *Piesa) DrawPiece() *ebiten.Image {
 }
 
 // Move verifica pe ce patrate se poate misca o anumita piesa si apeleaza functia corespunzatoare
-func (p Piesa) Move(tabla *[8][8]Piesa, x, y int, mutare, isSah bool) {
+func (p Piesa) Move(tabla *[8][8]Piesa, x, y int, mutare, isSah, ok bool) {
 	switch p.Tip {
 	case 'K':
 		p.miscareRege(tabla, x, y, mutare, isSah)
 	case 'P':
-		p.miscarePion(tabla, x, y, mutare, isSah)
+		p.miscarePion(tabla, x, y, mutare, isSah, ok)
 	case 'B':
-		p.miscareNebun(tabla, x, y, mutare, isSah)
+		p.miscareNebun(tabla, x, y, mutare, isSah, ok, false)
 	case 'N':
-		p.miscareCal(tabla, x, y, mutare, isSah)
+		p.miscareCal(tabla, x, y, mutare, isSah, ok)
 	case 'R':
-		p.miscareTura(tabla, x, y, mutare, isSah)
+		p.miscareTura(tabla, x, y, mutare, isSah, ok, false)
 	case 'Q':
-		p.miscareRegina(tabla, x, y, mutare, isSah)
+		p.miscareRegina(tabla, x, y, mutare, isSah, ok)
 	default:
 		return
 	}
@@ -190,7 +195,7 @@ func verifPatrateAtacate(tabla *[8][8]Piesa) {
 	}
 	for i := 0; i < 8; i++ {
 		for j := 0; j < 8; j++ {
-			tabla[i][j].Move(tabla, i, j, false, false)
+			tabla[i][j].Move(tabla, i, j, false, false, false)
 		}
 	}
 }

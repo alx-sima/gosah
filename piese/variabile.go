@@ -15,15 +15,30 @@ const (
 	MatVal = 2
 )
 
+type pieseCounter struct {
+	piese map[rune]int
+	nr    int
+}
+
+func (p *pieseCounter) edit(tip rune, i int) {
+	p.piese[tip] += i
+	p.nr += i
+	if p.piese[tip] < 0 {
+		p.piese[tip] = 0
+	}
+	if p.nr < 0 {
+		p.nr = 0
+	}
+}
+
 var (
 	// Board retine tabla de joc
 	Board [8][8]Piesa
-	// PieseAlbe retine piesele albe ramase. 'B' reprezinta nebunul de pe patratele albe, iar 'b' reprezinta nebunul de pe patratele negre
-	PieseAlbe []rune
-	// PieseNegre retine piesele negre ramase. 'B' reprezinta nebunul de pe patratele albe, iar 'b' reprezinta nebunul de pe patratele negre
-	PieseNegre []rune
-	// Selected retine piesa pe care s-a dat click
-	Selected PozitiePiesa
+	// ramaseAlbe, ramaseNegre retin piesele ramase pt. fiecare jucator.
+	ramaseAlbe, ramaseNegre pieseCounter
+
+	// selected retine piesa pe care s-a dat click
+	selected PozitiePiesa
 	// Clicked retine daca fost dat click pe o piesa
 	Clicked bool
 	// existaMutare retine daca exista miscari legale
@@ -38,8 +53,8 @@ var (
 	// DEPRECATED
 	// Pat retine daca jocul se afla in stadiul de pat/egalitate (pentru a termina jocul)
 	Pat bool
-	// MutariUltimaCapturare retine numarul de mutari de la ultima capturare
-	MutariUltimaCapturare int
+	// mutariUltimaCapturare retine numarul de mutari de la ultima capturare
+	mutariUltimaCapturare int
 	// Turn retine 'W' daca e randul albului, sau 'B' daca e randul negrului
 	Turn rune
 	// Editing retine true daca este in modul editare, false daca e joc normal
@@ -54,8 +69,8 @@ var (
 	Nivele []string
 	// Castigator retine cine a castigat
 	Castigator string
-	// Stare retine daca meciul e in sah sau pat
-	Stare int
+	// stare retine daca meciul e in sah sau pat
+	stare int
 	// TimpRamas retine timpul ramas pentru fiecare jucator
 	TimpRamas struct {
 		Alb struct {
@@ -70,7 +85,16 @@ var (
 	// Miscari retine toate miscarile efectuate de jucatori
 	Miscari struct {
 		Negru []string
-		Alb []string
+		Alb   []string
 	}
 	// Miscari.Negru = append(Miscari.Negru, miscare)
+	pieseAtacaPatrat struct {
+		nr int
+		lin []int
+		col []int
+	}
+
+	// DEPRECATED
+	// TipSelectat retine ce piesa e selectata in editor
+	TipSelectat rune
 )

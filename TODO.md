@@ -1,0 +1,13 @@
+- [ x ] de afisat piesa selectata in editor
+- [] nu permite salvarea nivelului daca nu exista regi sau daca sunt in sah
+- [] BONUS: afiseaza text ca nu se poate salva  
+- [] meniu de help (cand apesi "?")
+- [] afisat istoric piese
+- [] cautat buguri
+- [] refactor code
+- [] optioanal verifica daca jsonurile sunt valide in input
+---  
+- [ x ] nivele personalizate
+- [ x ] rocada
+- [ x ] en passant
+- [ x ] removed Herobrine
