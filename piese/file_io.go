@@ -2,7 +2,6 @@ package piese
 
 import (
 	"encoding/json"
-	"io/fs"
 	"io/ioutil"
 	"os"
 	"strings"
@@ -70,7 +69,7 @@ func citireNivele() (nivele []string) {
 func saveToJson(niv data) {
 	text, _ := json.MarshalIndent(niv, "", "\t")
 	// TODO: alege numele fisierului cand salvezi
-	if err := os.WriteFile("nivele/custom.json", text, fs.ModePerm); err != nil {
+	if err := os.WriteFile("nivele/custom.json", text, 0777); err != nil {
 		panic(err)
 	}
 

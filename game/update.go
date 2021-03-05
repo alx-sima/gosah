@@ -19,7 +19,7 @@ func (g *game) Update() error {
 	if inpututil.IsKeyJustPressed(ebiten.KeyH) {
 		helping = !helping
 		if helping {
-			//updateHelpText()
+			updateHelpText()
 		}
 	}
 

@@ -110,9 +110,9 @@ func (g *game) Draw(screen *ebiten.Image) {
 			(piese.Width-ofsx)/2, (piese.Height-ofsy)/2,
 			color.RGBA{R: 255, G: 69, B: 0, A: 255})
 		return
-		// Cronometrul se afiseaza cand jocul e pornit, dar nu in editor
+		// Cronometrul si istoricul mutarilor se afiseaza cand jocul e pornit, dar nu in editor
 	} else if piese.Started && !piese.Editing {
-		// Deseneaza fundalul timerului
+		// Timer
 		rect := ebiten.NewImage(piese.Offset, 2*piese.L)
 		opts := &ebiten.DrawImageOptions{}
 		rect.Fill(color.RGBA{R: 100, G: 100, B: 100, A: 255})
@@ -127,6 +127,26 @@ func (g *game) Draw(screen *ebiten.Image) {
 
 		timp = fmt.Sprintf("%02d:%02d", piese.TimpRamas.Alb.Min, piese.TimpRamas.Alb.Sec)
 		text.Draw(screen, timp, bigFont, 0, 22*piese.L/3, color.White)
+
+		// Istoric mutari (daca exista)
+		if len(piese.Miscari.Alb) > 0 {
+			var mutare string
+			var i = len(piese.Miscari.Alb)-18
+			if i < 0 {
+				i = 0
+			}
+
+			for ; i < len(piese.Miscari.Negru); i++ {
+				mutare += fmt.Sprintf("%d: %s; %s\n", i+1, piese.Miscari.Alb[i], piese.Miscari.Negru[i])
+			}
+
+			// Daca alb are mai multe miscari decat negru
+			if i == len(piese.Miscari.Alb)-1 {
+				mutare += fmt.Sprintf("%d: %s;\n", i+1, piese.Miscari.Alb[i])
+			}
+
+			text.Draw(screen, mutare, smallFont, piese.Width - piese.Offset + 5, 50, color.White)
+		}
 	}
 
 	// afiseaza piesa selectata (in editor)
@@ -151,6 +171,6 @@ func (g *game) Draw(screen *ebiten.Image) {
 		helpText := "h - help "
 		w := text.BoundString(smallFont, helpText).Dx()
 		h := text.BoundString(smallFont, helpText).Dy()
-		text.Draw(screen, helpText, smallFont, piese.Width - w, piese.Height - h, color.White)
+		text.Draw(screen, helpText, smallFont, piese.Width-w, piese.Height-h, color.White)
 	}
 }

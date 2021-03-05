@@ -55,18 +55,14 @@ func (p *Piesa) miscarePion(tabla *[8][8]Piesa, x, y int, mutare, isSah, ok bool
 			if Turn == 'W' {
 				if tabla[x+1][y-1].Tip == 'P' && tabla[x+1][y+1].Tip == 'P' && tabla[x][y].Culoare != Turn && tabla[x+1][y-1].Culoare == tabla[x+1][y+1].Culoare {
 					pieseAtacaPatrat.nr = 2
-					pieseAtacaPatrat.col = append(pieseAtacaPatrat.col, x + 1)
-					pieseAtacaPatrat.lin = append(pieseAtacaPatrat.col, y - 1)
-					pieseAtacaPatrat.col = append(pieseAtacaPatrat.col, x + 1)
-					pieseAtacaPatrat.lin = append(pieseAtacaPatrat.col, y + 1)
+					pieseAtacaPatrat.col = append(pieseAtacaPatrat.col, x + 1, x + 1)
+					pieseAtacaPatrat.lin = append(pieseAtacaPatrat.col, y - 1, y + 1)
 				}
 			} else {
 				if tabla[x-1][y-1].Tip == 'P' && tabla[x-1][y+1].Tip == 'P' && tabla[x][y].Culoare != Turn && tabla[x-1][y-1].Culoare == tabla[x-1][y+1].Culoare {
 					pieseAtacaPatrat.nr = 2
-					pieseAtacaPatrat.col = append(pieseAtacaPatrat.col, x - 1)
-					pieseAtacaPatrat.lin = append(pieseAtacaPatrat.col, y - 1)
-					pieseAtacaPatrat.col = append(pieseAtacaPatrat.col, x - 1)
-					pieseAtacaPatrat.lin = append(pieseAtacaPatrat.col, y + 1)
+					pieseAtacaPatrat.col = append(pieseAtacaPatrat.col, x - 1, x - 1)
+					pieseAtacaPatrat.lin = append(pieseAtacaPatrat.col, y - 1, y + 1)
 				}
 			}
 		}
