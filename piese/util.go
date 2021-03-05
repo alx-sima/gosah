@@ -1,7 +1,6 @@
 package piese
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -189,21 +188,16 @@ func Mutare() {
 
 		if Mat {
 			if Turn == 'W' {
-				Miscari.Alb[len(Miscari.Alb)] += "#"
+				Miscari.Alb[len(Miscari.Alb) - 1] += "#"
 			} else {
-				Miscari.Negru[len(Miscari.Negru)] += "#"
+				Miscari.Negru[len(Miscari.Negru) - 1] += "#"
 			}
 		} else if SahNegru || SahAlb {
 			if Turn == 'W' {
-				Miscari.Alb[len(Miscari.Alb)] += "+"
+				Miscari.Alb[len(Miscari.Alb) - 1] += "+"
 			} else {
-				Miscari.Negru[len(Miscari.Negru)] += "+"
+				Miscari.Negru[len(Miscari.Negru) - 1] += "+"
 			}
 		}
-
-		if len(Miscari.Negru) == len(Miscari.Alb) {
-			fmt.Println(fmt.Sprintf("%d", len(Miscari.Alb)) + " " + Miscari.Alb[len(Miscari.Alb) - 1] + " " + Miscari.Negru[len(Miscari.Negru) - 1])
-		}
-
 	}
 }
